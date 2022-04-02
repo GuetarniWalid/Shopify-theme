@@ -1,0 +1,120 @@
+{{ 'section-header.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  #shopify-section-header {
+    background-color: 
+    {%- if section.settings.header_transparent__active == true and template.name == 'index' -%}
+      transparent;
+    {%- else -%}
+      {{ section.settings.header_background__color }};
+    {%- endif -%}
+
+  }
+
+  .header_translate_up {
+    transform: translateY(-100%);
+  }
+
+  #shopify-section-header .header_svg_fill_colorWhenTransparent path {
+    fill: {{ section.settings.header_icons__colorWhenTransparent }};
+  }
+  
+  #shopify-section-header .header_svg_fill_color 
+  {%- if section.settings.header_transparent__active != true or template.name != 'index' %}
+  >svg
+  {% endif %}
+  path {
+    fill: {{ section.settings.header_icons__color }};
+  }
+
+  #shopify-section-header a svg {
+    width: auto;
+    height: {{ section.settings.header_icons__size }}px;
+  }
+
+{%- endstyle -%}
+
+<div id="header-info-element" data-background-color="{{ section.settings.header_background__color }}" data-header-transparency-active="{%- if section.settings.header_transparent__active == true and template.name == 'index' -%}true{%- else -%}false{%- endif -%}" class="header__flex_space {% if section.settings.header_transparent__active == true and template.name == 'index' %}header_svg_fill_colorWhenTransparent{% else %}header_svg_fill_color{% endif %}">
+  {% render 'icon-hamburger' %}
+  <a class="main-logo" href="{{ routes.root_url }}">
+    {%- if section.settings.logo_icon != blank -%}
+      {{ section.settings.logo_icon }}
+    {% else %}
+      {% render 'icon-blownjoy' %}
+    {%- endif -%}
+  </a>
+  {% render 'icon-cart' %}
+</div>
+
+{% render 'header-menu' %}
+
+<script src="{{ 'section-header.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "Header",
+  "tag": "header",
+  "limit": 1,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+      "type": "html",
+      "id": "logo_icon",
+      "label": "Logo",
+      "info": "Only svg are allowed"
+    },
+    {
+      "type": "range",
+      "id": "header_icons__size",
+      "min": 25,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Logo icon size",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "color_background",
+      "id": "header_background__color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Icons color"
+    },
+    {
+      "type": "paragraph",
+      "content": "The color of the icons depending on whether the header is transparent or not"
+    },
+    {
+      "type": "color",
+      "id": "header_icons__color",
+      "label": "Icons color",
+      "default": "#3a3a3a",
+      "info": "When the background is not transparent"
+    },
+    {
+      "type": "checkbox",
+      "id": "header_transparent__active",
+      "label": "Activate header transprency",
+      "default": true,
+      "info": "If the box is checked, you must choose a color below for the icons when the background is transparent"
+    },  
+    {
+      "type": "color",
+      "id": "header_icons__colorWhenTransparent",
+      "label": "Icons color",
+      "default": "#ffffff",
+      "info": "When the background is transparent"
+    }
+  ]
+}
+{% endschema %}

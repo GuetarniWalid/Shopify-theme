@@ -1,0 +1,25 @@
+.banner {
+  position: relative;
+}
+
+.banner:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: #000;
+  z-index: 1;
+}
+
+.banner img {
+  width: 100%;
+  height: auto;
+  max-height: 100vh;
+  object-fit: cover;
+}
+
+.banner-content {
+  color: #fff;
+  position: absolute;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+}

@@ -1,0 +1,44 @@
+{{ 'snippet-header-menu.css' | asset_url | stylesheet_tag }}
+
+{% style %}
+.header_menu{
+    background: {{ section.settings.header_background__color }};
+}
+
+.header_menu>ul>li {
+  border-bottom: 1px solid {{ section.settings.header_icons__color }}15;
+}
+
+.header_menu a {
+  color: {{ section.settings.header_icons__color }};
+}
+{% endstyle %}
+
+<nav class="header_menu header_menu_hidden">
+    <ul>
+      {% for link in linklists.main-menu.links %}
+        <li>
+          <a href="{{ link.url }}">{{ link.title }}</a>
+
+          {% if link.links.size > 0 %}
+            <ul class="menu dropdown-child">
+              {% for child_link in link.links %}
+                <li class="menu-link">
+                  <a href="{{ child_link.url }}">{{ child_link.title }}</a>
+    
+                  {% if child_link.links.size > 0 %}
+                    <ul class="menu dropdown-grandchild">
+                      {% for grandchild_link in child_link.links %}
+                        <li class="menu-link">
+                          <a href="{{ grandchild_link.url }}">{{ grandchild_link.title }}</a>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}</li>
+      {% endfor %}
+    </ul>
+</nav>

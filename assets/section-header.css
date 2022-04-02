@@ -1,0 +1,27 @@
+#shopify-section-header {
+  width: 100%;
+  position: fixed;
+  top: 0px;
+  transition: transform 0.25s;
+  padding: 15px 20px;
+  z-index: 3;
+}
+
+.header__flex_space {
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#shopify-section-header svg {
+  cursor: pointer;
+}
+
+#shopify-section-header svg {
+  cursor: pointer;
+}
+
+#shopify-section-header .main-logo {
+  display: flex;
+}

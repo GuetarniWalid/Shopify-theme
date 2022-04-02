@@ -1,0 +1,239 @@
+{{ 'section-image-banner.css' | asset_url | stylesheet_tag }}
+
+{% style %}
+#shopify-section-{{ section.id }}:after  {
+  opacity: calc({{ section.settings.overlay_opacity }} / 100);
+  opacity: calc({{ section.settings.overlay_opacity }} / 100);
+}
+
+#shopify-section-{{ section.id }} .banner-content {
+  top: {{ section.settings.content_horizontal_position }}%;
+  left: {{ section.settings.content_vertical_position }}%;
+  text-align: {{ section.settings.desktop_content_alignment }};
+}
+
+#shopify-section-{{ section.id }} .banner-content h1,h2,h3,p,a {
+  color: {{ section.settings.body_text }};
+}
+
+{% endstyle %}
+
+{{ section.settings.image_desktop | image_url: width: 2000 | image_tag: preload: true, alt: section.settings.image_desktop.alt }}"
+
+<div class="banner-content">
+  {%- for block in section.blocks -%}
+    {%- if  block.type == 'heading' and block.settings.heading != blank -%}
+      <h1 class="banner-title" >
+        {{ block.settings.heading }}
+      </h1>
+    {%- elsif block.type == 'text' and block.settings.text != blank -%}
+      <p>
+        {{ block.settings.text }}
+      </p>
+    {%- elsif block.type == 'buttons' and block.settings.button_text != blank -%}
+      <a href=".">{{ block.settings.button_text }}</a>
+    {%- endif -%}
+  {%- endfor -%}
+
+</div>
+
+{% schema %}
+{
+  "name": "Banner with image",
+  "class": "banner",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout on desktop"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_desktop",
+      "label": "Image on desktop"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 90,
+      "step": 10,
+      "unit": "%",
+      "label": "Overlay opacity",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "content_horizontal_position",
+      "min": 0,
+      "max": 100,
+      "step": 10,
+      "unit": "%",
+      "label": "Content horizontal position",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "content_vertical_position",
+      "min": 0,
+      "max": 100,
+      "step": 10,
+      "unit": "%",
+      "label": "Content vertical position",
+      "default": 0
+    },
+    {
+      "type": "select",
+      "id": "desktop_content_alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "right",
+      "label": "Content alignment on desktop"
+    },
+    {
+      "type": "color",
+      "id": "body_text",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Layout on mobile"
+    },
+    {
+      "type": "select",
+      "id": "mobile_content_alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center",
+      "label": "Content alignment on mobile"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "heading",
+      "name": "Heading",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "default": "Banner title",
+          "label": "Heading"
+        },
+        {
+          "type": "select",
+          "id": "heading_size",
+          "options": [
+            {
+              "value": "h1",
+              "label": "Main title"
+            },
+            {
+              "value": "h2",
+              "label": "Secondary title"
+            },
+            {
+              "value": "h3",
+              "label": "Not important"
+            }
+          ],
+          "default": "h1",
+          "label": "Importance of the title"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "Text",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "default": "Proposal value, details about your site or product",
+          "label": "Text"
+        },
+        {
+          "type": "select",
+          "id": "text_style",
+          "options": [
+            {
+              "value": "subtitle",
+              "label": "Subtitle"
+            },
+            {
+              "value": "normal",
+              "label": "Normal"
+            }
+          ],
+          "default": "subtitle",
+          "label": "t:sections.image-banner.blocks.text.settings.text_style.label"
+        }
+      ]
+    },
+    {
+      "type": "buttons",
+      "name": "Button",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "button_text",
+          "default": "Shop all",
+          "label": "Text",
+          "info": "The button does not appear in case of empty text"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Banner with image",
+      "blocks": [
+        {
+          "type": "heading"
+        },
+        {
+          "type": "text"
+        },
+        {
+          "type": "buttons"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+
+

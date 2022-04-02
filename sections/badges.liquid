@@ -1,0 +1,273 @@
+{{ 'section-badges.css' | asset_url | stylesheet_tag }}
+
+{% style %}
+#shopify-section-{{ section.id }}  {
+  padding-top: {{ section.settings.margin_top }}px;
+  padding-bottom: {{ section.settings.margin_bottom }}px;
+  background: {{ section.settings.section_background_color }};
+}
+
+#shopify-section-{{ section.id }} > div {
+  justify-content: {{ section.settings.columns_alignment }};
+}
+
+#shopify-section-{{ section.id }} .svg-wrapper {
+  margin-bottom: {{ section.settings.margin_under_logo }}px;
+}
+
+#shopify-section-{{ section.id }} .title {
+  font-weight: {%- if section.settings.title_bold -%}bold{% else %}normal{% endif %};
+  margin-bottom: {{ section.settings.margin_under_title }}px;
+}
+
+#shopify-section-{{ section.id }} .badge-column {
+  width: {{ section.settings.nb_columns_on_computer }}%;
+}
+
+#shopify-section-{{ section.id }} svg {
+  width: calc({{ section.settings.logo_size }}px);
+  color: {{ section.settings.logo_color }};
+}
+
+.svg-background::before {
+  width: calc({{ section.settings.logo_size }}px * 1.5 + 5px);
+  height: calc({{ section.settings.logo_size }}px * 1.5 + 5px);
+  background: {{ section.settings.logo_background_color }};
+}
+
+
+@media only screen and (max-width: 750px) {
+  #shopify-section-{{ section.id }} .badge-column {
+    width: {{ section.settings.nb_columns_on_mobile }}%;
+  }
+}
+{% endstyle %}
+
+<div class=" page-width">
+  {%- for block in section.blocks -%}
+    <div class="badge-column">
+      <div class="svg-wrapper {% if section.settings.logo_background %}svg-background{% endif %}">
+        {%- if block.settings.badge_logo == blank -%}
+          {%- render "icon-truck-full" -%}
+        {%- else -%}  
+          {{ block.settings.badge_logo }}
+        {%- endif -%}
+      </div>
+      {%- if block.settings.heading != blank -%}
+        <h3 class="title">{{ block.settings.heading }}</h3>
+      {%- endif -%}
+      {%- if block.settings.text != blank -%}
+        <p>{{ block.settings.text }}</p>
+      {%- endif -%}
+    </div>
+  {%- endfor -%}
+</div>
+
+{% schema %}
+{
+  "name": "Badges",
+  "tag": "section",
+  "class": "section-badges",
+  "settings": [   
+    {
+      "type": "header",
+      "content": "Column settings"
+    },
+    {
+      "type": "select",
+      "id": "nb_columns_on_computer",
+      "label": "Number of columns per row on computer",
+      "options": [
+        {
+          "value": "100",
+          "label": "1"
+        },
+        {
+          "value": "50",
+          "label": "2"
+        },
+        {
+          "value": "33.33",
+          "label": "3"
+        },
+        {
+          "value": "25",
+          "label": "4"
+        }
+      ],
+      "default": "50"
+    },
+    {
+      "type": "select",
+      "id": "nb_columns_on_mobile",
+      "label": "Number of columns per row on mobile",
+      "options": [
+        {
+          "value": "100",
+          "label": "1"
+        },
+        {
+          "value": "50",
+          "label": "2"
+        }
+      ],
+      "default": "50"
+    },
+    {
+      "type": "radio",
+      "id": "columns_alignment",
+      "label": "Alignment of columns",
+      "info": "Only visible if the number of columns in a row is less than the number stipulated above",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "Left"
+        },
+        {
+          "value": "space-around",
+          "label": "Center"
+        }
+      ],
+      "default": "flex-start"
+    },
+    {
+      "type": "header",
+      "content": "logo"
+    },
+    {
+      "type": "color",
+      "id": "logo_color",
+      "label": "Color",
+      "default": "#121212"
+    },
+    {
+      "type": "range",
+      "id": "logo_size",
+      "min": 40,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "label": "Size",
+      "default": 45
+    },
+    {
+      "type": "checkbox",
+      "id": "logo_background",
+      "label": "Background",
+      "info": "If you want a rounded background behind the logo",
+      "default": false
+    },
+    {
+      "type": "color_background",
+      "id": "logo_background_color",
+      "label": "Background color",
+      "default": "#E0E0E0"
+    },
+    {
+      "type": "header",
+      "content": "title and text"
+    },
+    {
+      "type": "checkbox",
+      "id": "title_bold",
+      "label": "Title in bold",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "margin_under_logo",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Margin under the logo",
+      "default": 26
+    },
+    {
+      "type": "range",
+      "id": "margin_under_title",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Margin under the title",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "SECTION"
+    },
+    {
+      "type": "color_background",
+      "id": "section_background_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Top margin",
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Bottom margin",
+      "default": 35
+    }
+ ],
+  "blocks": [
+    {
+      "type": "badge_block",
+      "name": "Badge column",
+      "settings": [
+        {
+            "type": "html",
+            "id": "badge_logo",
+            "label": "Logo",
+            "info": "Only svg are allowed"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Title",
+          "default": "Badge title"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Text",
+          "default": "Lorem ipsum dolor sit amet, consectetur adipisicing elit."
+        } 
+      ]
+    }
+  ],
+  "presets": [
+    {
+        "name": "Badges",
+        "blocks": [
+            {
+              "type": "badge_block"
+            },
+            {
+              "type": "badge_block"
+            },
+            {
+              "type": "badge_block"
+            },
+            {
+              "type": "badge_block"
+            }
+        ]
+    }
+]
+}
+{% endschema %}
