@@ -6,8 +6,8 @@
         "heading": {
           "type": "heading",
           "settings": {
-            "heading": "Image banner",
-            "heading_size": "h0"
+            "heading": "<p>Image banner</p>",
+            "heading_size": 5
           }
         },
         "text": {
