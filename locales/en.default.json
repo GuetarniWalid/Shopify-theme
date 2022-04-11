@@ -229,6 +229,7 @@
       "remove_title": "Remove {{ title }}",
       "subtotal": "Subtotal",
       "new_subtotal": "New subtotal",
+      "economy": "You save",
       "note": "Order special instructions",
       "checkout": "Check out",
       "empty": "Your cart is empty",

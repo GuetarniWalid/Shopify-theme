@@ -1,0 +1,117 @@
+{{ 'section-cart-collapse.css' | asset_url | stylesheet_tag }}
+{{ 'component-loading-overlay.css' | asset_url | stylesheet_tag }}
+
+{%liquid
+    assign totalDiscount = 0
+    for item in cart.items
+        if item.variant.compare_at_price
+            assign totalDiscount = item.variant.compare_at_price | minus: item.price | times: item.quantity | plus: totalDiscount
+        endif
+    endfor
+%}
+
+
+<div id="shadow-background" style="display: block;"><br/></div>
+
+<section class="cart-collapse-section" data-section-id="{{ section.id }}">
+    <div class="cart-collapse-header">
+        <h2>{{ "sections.cart.title" | t }}</h2>
+        <button type="button">
+            {% render 'icon-close' %}
+        </button>
+    </div>
+    <div class="cart-collapse-body">
+        {% if cart.items.size == 0 %}
+            <h2 class="cart-collapse-empty">{{ 'sections.cart.empty' | t }}</h2>
+        {% else %}
+            {% for item in cart.items %}
+                <div class="cart-collapse-product-raw" data-variant-id="{{ item.variant_id }}" data-index="{{ forloop.index | minus: 1 }}">
+                    <div class="cart-collapse-product-raw-img-box">
+                        {% liquid
+                            if item.product.has_only_default_variant and item.image != blank
+                                echo item.image | image_url: width: 112 | image_tag: srcset: nil
+                            elsif item.variant.image.src != blank
+                                echo item.variant.image.src | image_url: width: 112 | image_tag: srcset: nil
+                            endif 
+                        %}
+                        <span>{{ item.quantity }}</span>
+                    </div>
+                    <div class="cart-collapse-product-raw-title">
+                        <div>
+                            <h3>
+                                <a href="{{ item.variant.url }}" >{{ item.title }}</a>
+                            </h3>
+                            {% unless item.product.has_only_default_variant %}
+                                <p>{{ item.variant.title }}</p>
+                            {% endunless %}
+                        </div>
+                        <button type="button" data-quantity="0">
+                            {% render 'icon-remove' %}
+                        </button>
+                    </div>
+                    <div class="cart-collapse-product-raw-counter">
+                        <button data-quantity="{{ item.quantity | minus: 1 }}" {% if item.quantity == 1 %}disabled{% endif %}>{% render 'icon-minus' %}</button>
+                        <button data-quantity="{{ item.quantity | plus: 1 }}">{% render 'icon-plus' %}</button>
+                    </div>
+                    <div class="cart-collapse-product-raw-prices">
+                        <div class="loading-overlay__spinner hidden" style="line-height:1rem">
+                            <svg aria-hidden="true" focusable="false" role="presentation" class="spinner" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+                            <circle class="path" fill="none" stroke-width="6" cx="33" cy="33" r="30"></circle>
+                            </svg>
+                        </div>
+                        <p>
+                            {% assign original_price = item.variant.compare_at_price | times: item.quantity %}
+                            {% if original_price != item.final_line_price and original_price > 0 %}
+                                <span>
+                                    <s>{{ original_price | money }}</s>
+                                </span>
+                            {% endif %}
+                            <span>
+                                {{ item.final_line_price | money }}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+    <div class="cart-collapse-footer">
+        <ul>
+            <li>
+                <span>{{ "sections.cart.economy" | t }}:</span>
+                <span>{{ totalDiscount | money }}</span>
+            </li>
+            <li>
+                <span>{{ "sections.cart.subtotal" | t }}:</span>
+                <span>
+                    <s style="margin-right:5px">{{ cart.original_total_price | plus: totalDiscount | money }}</s>
+                    {{ cart.total_price | money }}                        
+                </span>
+            </li>
+        </ul>
+        <a href="/cart">
+            {% render 'icon-card-padlock' %}
+            Paiement sécurisé
+        </a>
+        <div>
+            {% render 'icon-card-padlock' %}
+            {% render 'icon-mastercard' %}
+            {% render 'icon-visa' %}
+            {% render 'icon-paypal' %}
+        </div>
+    </div>
+</section>
+
+<script src="{{ 'section-cart-collapse.js' | asset_url }}" defer="defer"></script>
+
+
+<!-- {% schema %}
+{
+  "name": "test",
+  "tag": "section",
+  "class": "section-badges",
+  "settings": [
+
+  ]
+}
+{% endschema %} -->

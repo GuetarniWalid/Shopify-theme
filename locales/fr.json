@@ -229,6 +229,7 @@
       "remove_title": "Supprimer {{ title }}",
       "subtotal": "Sous-total",
       "new_subtotal": "Nouveau sous-total",
+      "economy": "Vous économisez",
       "note": "Instructions spéciales concernant la commande",
       "checkout": "Procéder au paiement",
       "empty": "Votre panier est vide",

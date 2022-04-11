@@ -1,18 +1,15 @@
 {{ 'section-header.css' | asset_url | stylesheet_tag }}
 
 {%- style -%}
-  #shopify-section-header {
-    background-color: 
+  #shopify-section-header {    
     {%- if section.settings.header_transparent__active == true and template.name == 'index' -%}
-      transparent;
+      background-color: transparent;
+      position: fixed;
     {%- else -%}
-      {{ section.settings.header_background__color }};
+      background-color: {{ section.settings.header_background__color }};
+      position: sticky;     
     {%- endif -%}
 
-  }
-
-  .header_translate_up {
-    transform: translateY(-100%);
   }
 
   #shopify-section-header .header_svg_fill_colorWhenTransparent path {
@@ -43,10 +40,12 @@
       {% render 'icon-blownjoy' %}
     {%- endif -%}
   </a>
-  {% render 'icon-cart' %}
+  <button id="header-cart">
+    {% render 'icon-cart' %}
+  </button>
 </div>
 
-{% render 'header-menu' %}
+  {% render 'header-menu' %}
 
 <script src="{{ 'section-header.js' | asset_url }}" defer="defer"></script>
 
@@ -107,7 +106,7 @@
       "label": "Activate header transprency",
       "default": true,
       "info": "If the box is checked, you must choose a color below for the icons when the background is transparent"
-    },  
+    },
     {
       "type": "color",
       "id": "header_icons__colorWhenTransparent",

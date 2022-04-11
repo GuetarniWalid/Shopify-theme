@@ -12,6 +12,7 @@ let distanceToTopBackgroundChange = 100;
 let distanceToTopHeaderPosition = 20;
 let isTransparencyActive;
 let headerPosition = 'down';
+let headerCart;
 
 function assignVariables() {
   html = document.querySelector('html');
@@ -22,7 +23,8 @@ function assignVariables() {
   backgroundColor = infoELement.dataset.backgroundColor;
   oldScrollBarToTop = html.scrollTop;
   isBackgroundTransparent = html.scrollTop === 0 ? true : false;
-  isTransparencyActive = infoELement.dataset.headerTransparencyActive === 'true' ? true : false
+  isTransparencyActive = infoELement.dataset.headerTransparencyActive === 'true' ? true : false;
+  headerCart = document.getElementById('header-cart')
 }
 
 function switchHeaderBackground(mode) {
@@ -92,12 +94,12 @@ function scrollDirection() {
 }
 
 function raisesHeader() {
-  header.classList.add('header_translate_up');
+  header.classList.add('translate_up');
   headerPosition = 'up'
 }
 
 function lowersHeader() {
-  header.classList.remove('header_translate_up');
+  header.classList.remove('translate_up');
   headerPosition = 'down'
 }
 
@@ -113,10 +115,10 @@ if (isTransparencyActive) {
   switchHeaderBackground('firstDisplay');
 }
 
-document.addEventListener('scroll', scrollActions);
+Shopify.addListener(document, 'scroll', scrollActions);
 
 //already displayed and after changes in shopify editor
-document.addEventListener('shopify:section:load', e => {
+Shopify.addListener(document, 'shopify:section:load', e => {
   assignVariables();
 
   if (isTransparencyActive) {
@@ -124,23 +126,22 @@ document.addEventListener('shopify:section:load', e => {
   }
 });
 
-
 /**
  * drop-down menu part
  */
 function expandMenu() {
   document.removeEventListener('scroll', scrollActions)
   menuIcon.removeEventListener('click', expandMenu)
-  menuIcon.addEventListener('click', closeMenu)
+  Shopify.addListener(menuIcon, 'click', closeMenu);
   document.body.style.overflow = 'hidden';
   switchHeaderBackground('menu-expanded')
   menuHeader.classList.replace('header_menu_hidden', 'header_menu_visible')
 }
 
 function closeMenu() {
-  document.addEventListener('scroll', scrollActions)
+  Shopify.addListener(document, 'scroll', scrollActions);
   menuIcon.removeEventListener('click', closeMenu)
-  menuIcon.addEventListener('click', expandMenu)
+  Shopify.addListener(menuIcon, 'click', expandMenu);
   document.body.style.overflow = 'auto';
   switchHeaderBackground('firstDisplay')
   menuHeader.classList.replace('header_menu_visible', 'header_menu_hidden')
@@ -148,4 +149,15 @@ function closeMenu() {
 
 
 //if the menu is expanded
-menuIcon.addEventListener('click', expandMenu)
+Shopify.addListener(menuIcon, 'click', expandMenu);
+
+
+/**
+ * cart part
+ */
+ Shopify.addListener(headerCart, 'click', () => {
+  const openCartCollapseEvent = new Event('openCartCollapse')
+  document.body.dispatchEvent(openCartCollapseEvent)
+});
+
+

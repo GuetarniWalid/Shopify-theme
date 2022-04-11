@@ -30,7 +30,7 @@
   width: {{ section.settings.content_width_desktop }}%;
 }
 
-#shopify-section-{{ section.id }} .banner-content h1, p {
+#shopify-section-{{ section.id }} .banner-content h1, #shopify-section-{{ section.id }} .banner-content p {
   color: {{ section.settings.body_text }};
 }
 
@@ -124,7 +124,7 @@
      <a 
       href="{{ block.settings.button_link }}"
       class="banner-button"
-      style="color:{{ block.settings.button_text_color }}; background:{{ block.settings.button_background_color }}; padding:{{ block.settings.button_size | divided_by: 2 }}rem {{ block.settings.button_size | divided_by: 0.7 }}rem; line-height: {{ block.settings.button_size }}rem; margin-top:{{ block.settings.button_size | divided_by: 3}}rem; font-size: {{ block.settings.button_size | divided_by: 1.4}}rem; border-radius:{{ block.settings.button_radius }}px; {% if block.settings.button_bold %}font-weight: bold;{% endif %}"
+      style="color:{{ block.settings.button_text_color }}; background:{{ block.settings.button_background_color }}; padding:{{ block.settings.button_size | divided_by: 2 }}rem {{ block.settings.button_size | divided_by: 0.7 }}rem; line-height: {{ block.settings.button_size }}rem; margin-top:{{ block.settings.button_size | divided_by: 3 }}rem; font-size: {{ block.settings.button_size | divided_by: 1.4 }}rem; border-radius:{{ block.settings.button_radius }}px; {% if block.settings.button_bold %}font-weight: bold;{% endif %}"
       >
       {{ block.settings.button_text }}
      </a>

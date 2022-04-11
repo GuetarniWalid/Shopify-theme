@@ -311,10 +311,6 @@ body,
   list-style: none;
 }
 
-.hidden {
-  display: none !important;
-}
-
 .visually-hidden {
   position: absolute !important;
   overflow: hidden;
@@ -2654,4 +2650,39 @@ details-disclosure > details {
       padding-bottom: var(--grid-desktop-vertical-spacing);
     }
   }
+}
+
+/************************************************************/
+/* All below will be include in the final version of base.css */
+/************************************************************/
+
+/* Reset css */
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Unique properties */
+
+/* Translate */
+.translate_up {
+  transform: translateY(-100%);
+}
+
+.translate_right {
+  transform: translateX(100%);
+}
+
+/* Flex */
+.flex_center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/**/
+
+.hidden {
+  display: none !important;
 }

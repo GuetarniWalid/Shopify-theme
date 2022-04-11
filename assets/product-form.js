@@ -6,7 +6,8 @@ if (!customElements.get('product-form')) {
       this.form = this.querySelector('form');
       this.form.querySelector('[name=id]').disabled = false;
       this.form.addEventListener('submit', this.onSubmitHandler.bind(this));
-      this.cartNotification = document.querySelector('cart-notification');
+      //! a revoir
+      //      this.cartNotification = document.querySelector('cart-notification');
     }
 
     onSubmitHandler(evt) {
@@ -15,7 +16,8 @@ if (!customElements.get('product-form')) {
       if (submitButton.classList.contains('loading')) return;
 
       this.handleErrorMessage();
-      this.cartNotification.setActiveElement(document.activeElement);
+      //! a revoir
+      //this.cartNotification.setActiveElement(document.activeElement);
 
       submitButton.setAttribute('aria-disabled', true);
       submitButton.classList.add('loading');
@@ -26,7 +28,8 @@ if (!customElements.get('product-form')) {
       delete config.headers['Content-Type'];
 
       const formData = new FormData(this.form);
-      formData.append('sections', this.cartNotification.getSectionsToRender().map((section) => section.id));
+      //!à revoir
+      //formData.append('sections', this.cartNotification.getSectionsToRender().map((section) => section.id));
       formData.append('sections_url', window.location.pathname);
       config.body = formData;
 
@@ -37,8 +40,8 @@ if (!customElements.get('product-form')) {
             this.handleErrorMessage(response.description);
             return;
           }
-
-          this.cartNotification.renderContents(response);
+          //!à revoir
+          //this.cartNotification.renderContents(response);
         })
         .catch((e) => {
           console.error(e);

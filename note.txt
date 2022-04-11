@@ -1,0 +1,1 @@
+il manque a traduire "Vous économisez" dans locales.sections.cart.economy dans toutes langue sauf en, fr
