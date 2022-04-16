@@ -30,6 +30,7 @@
     {% render 'meta-tags' %}
 
     <script src="{{ 'global.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'component-shadow-background.js' | asset_url }}" defer="defer"></script>
     {{ content_for_header }}
 
     {%- liquid
@@ -215,7 +216,11 @@
     </a>
 
     {% section 'header' %}
-    {% section 'cart-collapse' %}
+    {%- if template.name != 'cart' -%}
+      {% section 'cart' %}
+    {%- endif -%}
+    <div id="shadow-background"><br/></div>
+
     <main id="MainContent" class="content-for-layout focus-none" role="main" tabindex="-1">
       {{ content_for_layout }}
     </main>

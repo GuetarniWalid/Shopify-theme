@@ -232,6 +232,8 @@
       "economy": "Vous économisez",
       "note": "Instructions spéciales concernant la commande",
       "checkout": "Procéder au paiement",
+      "rgpd": "J'accepte les conditions générale de vente",
+      "secure-payment": "Paiement sécurisé",
       "empty": "Votre panier est vide",
       "cart_error": "Une erreur est survenue lors de l’actualisation de votre panier. Veuillez réessayer.",
       "cart_quantity_error_html": "Vous ne pouvez pas ajouter plus de {{ quantity }} de ce produit à votre panier.",

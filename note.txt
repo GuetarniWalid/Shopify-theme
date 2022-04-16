@@ -1,1 +1,14 @@
-il manque a traduire "Vous économisez" dans locales.sections.cart.economy dans toutes langue sauf en, fr
+il manque a traduire :
+    "Vous économisez" dans locales.sections.cart.economy dans => all - (en, fr)
+    "Paiement sécurisé" dans locales.sections.cart.secure-payment dans => all - (en, fr)
+    "J'accepte les conditions générale de vente" dans locales.sections.cart.rgpd dans => all - (en, fr)
+
+
+
+revoir featured-product car je vais effacer asset/product-fom.js (délier le tout)
+
+enlever toute les allusions a cart-notification car n'existe plus
+
+effacer toute allusion a quantity-input quand celui-ci sera aussi enlever de main-cat-items et de featured-product puis remplacer les counter dans main-cart-itms, main-product et featured-product par un seul composant
+
+

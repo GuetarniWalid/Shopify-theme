@@ -2686,3 +2686,15 @@ button {
 .hidden {
   display: none !important;
 }
+
+body {
+  position: relative;
+}
+
+#shadow-background {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 10;
+  display: none;
+}
