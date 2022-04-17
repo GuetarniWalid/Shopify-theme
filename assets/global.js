@@ -753,9 +753,3 @@ class VariantRadios extends VariantSelects {
 }
 
 customElements.define('variant-radios', VariantRadios);
-
-
-/****************************************************************************/
-/******************* js specifique to blownjoy theme ************************/
-/****************************************************************************/
-

@@ -1,0 +1,87 @@
+{{ 'section-notice-card.css' | asset_url | stylesheet_tag }}
+
+<data 
+    hidden
+    data-border-radius="{{ section.settings.border_radius }}"
+    data-shadow="{{ section.settings.shadow }}"
+    data-error-background="{{ section.settings.error_background }}"
+    data-error-color="{{ section.settings.error_color }}"
+    data-error-bar-color="{{ section.settings.error_bar_color }}"
+></data>
+
+<script src="{{ 'section-notice-card.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "Notice card",
+  "tag": "div",
+  "class": "wrapper-notice-cards",
+  "limit": 1,
+  "settings": [
+    {
+      "type": "header",
+      "content": "General style"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 15,
+      "step": 5,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 5
+    },
+    {
+      "type": "radio",
+      "id": "shadow",
+      "label": "Shadow",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "0 .125rem .25rem rgba(0,0,0,.075)",
+          "label": "Depth 1"
+        },
+        {
+          "value": "0 .5rem 1rem rgba(0,0,0,.15)",
+          "label": "Depth 2"
+        },
+        {
+          "value": "0 1rem 3rem rgba(0,0,0,.175)",
+          "label": "Depth 3"
+        }
+      ],
+      "default": "0 .5rem 1rem rgba(0,0,0,.15)"
+    },
+    {
+      "type": "header",
+      "content": "Error cards"
+    },
+    {
+      "type": "paragraph",
+      "content": "Appears to notify the user if an error occurs"
+    },
+    {
+      "type": "color_background",
+      "id": "error_background",
+      "label": "Background",
+      "default": "#fff"
+    },
+    {
+      "type": "color",
+      "id": "error_color",
+      "label": "Font color",
+      "default": "#121212"
+    },
+    {
+      "type": "color_background",
+      "id": "error_bar_color",
+      "label": "Bar color",
+      "default": "crimson"
+    }
+  ]
+}
+{% endschema %}

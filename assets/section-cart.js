@@ -7,6 +7,8 @@ class CartSection extends HTMLElement {
   wrapperRows;
   body;
   footer;
+  cartButton;
+  checkoutButton;
 
   constructor() {
     super();
@@ -20,18 +22,40 @@ class CartSection extends HTMLElement {
     this.removeButtons = this.querySelectorAll('.cart-product-raw-title button');
     this.body = this.querySelector('.cart-body');
     this.footer = this.querySelector('.cart-footer');
+    this.cartButton = this.footer.querySelector('.cart-footer-payment-cart')
+    this.checkoutButton = this.footer.querySelector('.cart-footer-payment-checkout')
   }
 
   connectedCallback() {
     // Add all eventListener
     //To increment or decrement number of products
-    this.countersButtons.forEach(node => Shopify.addListener(node, 'click', this.updateCart.bind(this, node)));
-    this.removeButtons.forEach(node => Shopify.addListener(node, 'click', this.updateCart.bind(this, node)));
+    this.countersButtons.forEach(countersButton => Shopify.addListener(countersButton, 'click', this.updateCart.bind(this, countersButton)));
+    this.removeButtons.forEach(removeButton => Shopify.addListener(removeButton, 'click', this.updateCart.bind(this, removeButton)));
 
     //To remove cards
     this.wrapperRows.forEach(wrapperRow => {
       Shopify.addListener(wrapperRow, 'transitionend', this.animateCardRemove.bind(this));
     });
+
+    //To check RGPD
+    if(this.cartButton) {
+      Shopify.addListener(this.cartButton, 'click', (e) => {
+        e.preventDefault()      
+        const input = this.footer.querySelector('[name=rgpd]')
+        if(!input) location.assign('/cart')
+        else if(input && input.checked) location.assign('/cart')
+        else {
+          const noticeCard = new Event('showNoticeCard')
+          noticeCard.payload = {
+            status: 'error',
+            title: 'Test titre d\'erreur',
+            text: 'Test de paragraphe d\'erreur',
+            side: 'left'
+          }
+          document.body.dispatchEvent(noticeCard);
+        }
+      })
+    }
 
     Shopify.addListener(document.body, 'fetchNewProductQty', e => {
       try {
