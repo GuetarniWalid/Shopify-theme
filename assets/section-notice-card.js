@@ -16,8 +16,9 @@ class NoticeCard extends HTMLElement {
     super();
     this.wrapperNoticeCards = document.body.querySelector('.wrapper-notice-cards');
     this.dataElem = this.wrapperNoticeCards.querySelector('data');
-    const { animationIn, animationOut, inverseOfSide } = this.selectCSSVAlueAccordingSide(side);
-    const { borderRadius, shadow, background, color, barColor } = this.selectCSSValuesAccordingStatus(status);
+    const { animationIn, animationOut, inverseOfSide } = this.CSSBySide(side);
+    const { borderRadius, shadow, background, color, barColor } = this.CSSByStatus(status);
+    const iconFunc = this.iconFuncByStatus(status);
     this.innerHTML = `
     <style>
       .wrapper-notice-cards {
@@ -38,7 +39,7 @@ class NoticeCard extends HTMLElement {
           <path d="M.865 15.978a.5.5 0 00.707.707l7.433-7.431 7.579 7.282a.501.501 0 00.846-.37.5.5 0 00-.153-.351L9.712 8.546l7.417-7.416a.5.5 0 10-.707-.708L8.991 7.853 1.413.573a.5.5 0 10-.693.72l7.563 7.268-7.418 7.417z" fill="currentColor">
         </svg>
         <h4 style="color:${color};">
-          ${errorIcon(background, barColor)}
+          ${iconFunc(background, barColor)}
           ${title}
         </h4>
         <p>${text}</p>
@@ -92,7 +93,7 @@ class NoticeCard extends HTMLElement {
     });
   }
 
-  selectCSSValuesAccordingStatus(status) {
+  CSSByStatus(status) {
     const borderRadius = this.dataElem.dataset.borderRadius;
     const shadow = this.dataElem.dataset.shadow;
     const background = this.dataElem.dataset[`${status}Background`];
@@ -107,7 +108,7 @@ class NoticeCard extends HTMLElement {
     };
   }
 
-  selectCSSVAlueAccordingSide(side) {
+  CSSBySide(side) {
     let animationIn = side === 'right' ? 'bounceRight' : 'bounceLeft';
     let animationOut = side === 'right' ? 'debounceRight' : 'debounceLeft';
     let inverseOfSide = side === 'right' ? 'left' : 'right';
@@ -117,6 +118,13 @@ class NoticeCard extends HTMLElement {
       animationOut,
       inverseOfSide,
     };
+  }
+
+  iconFuncByStatus(status) {
+    switch (status) {
+      case 'error':
+        return errorIcon
+    }
   }
 }
 
