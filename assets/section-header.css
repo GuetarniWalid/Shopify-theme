@@ -3,7 +3,7 @@
   top: 0px;
   transition: transform 0.25s;
   padding: 15px 20px;
-  z-index: 3;
+  z-index: 100;
 }
 
 .header__flex_space {

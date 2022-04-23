@@ -1,18 +1,31 @@
 .header_menu {
-  position: absolute;
-  top: 100%;
+  background: var(--background);
+  position: fixed;
+  top: 0%;
   left: 0;
   width: 100%;
   height: 100vh;
-  transition: transform 0.2s ease-out;
+  padding-top: var(--padding-top);
+  z-index: 99;
+  transition: transform 0.25s ease-out;
 }
 
 .header_menu_visible {
-    transform: translateX(0);
+  transform: translateX(0);
+}
+
+.header_menu_visible li {
+  transition: opacity 0.25s 0.20s linear;
+  opacity: 1 !important;
 }
 
 .header_menu_hidden {
-    transform: translateX(-100%);
+  transform: translateX(-100%);
+}
+
+.header_menu_hidden li {
+  transition: opacity 0.1s linear;
+  opacity: 0 !important;
 }
 
 .header_menu ul {
@@ -22,6 +35,7 @@
 }
 
 .header_menu a {
+  color: var(--font-color);
   text-decoration: none;
 }
 
@@ -30,6 +44,7 @@
   padding: 20px 0 20px 20px;
   font-weight: 600;
   font-size: 1.7rem;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .header_menu ul:nth-child(2) {

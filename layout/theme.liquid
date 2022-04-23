@@ -214,12 +214,13 @@
       {{ "accessibility.skip_to_text" | t }}
     </a>
 
-    {% section 'header' %}
-    {%- if template.name != 'cart' -%}
-      {% section 'cart' %}
-    {%- endif -%}
-    {% render 'component-shadow-background' %}
-    {% section 'notice-card' %}
+    {%- liquid
+      section 'header' 
+      section 'header-menu' 
+      section 'cart'
+      render 'component-shadow-background'
+      section 'notice-card' 
+    %}
 
 
 

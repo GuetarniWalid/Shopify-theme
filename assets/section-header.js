@@ -1,157 +1,189 @@
-let html;
-let header;
-let infoELement;
-let menuIcon;
-let menuHeader;
-let isBackgroundTransparent;
-let backgroundColor;
-let oldScrollBarToTop;
-let newScrollBarToTop;
-const transparentColor = 'transparent';
-let distanceToTopBackgroundChange = 100;
-let distanceToTopHeaderPosition = 20;
-let isTransparencyActive;
-let headerPosition = 'down';
-let headerCart;
-
-function assignVariables() {
-  html = document.querySelector('html');
-  header = document.getElementById('shopify-section-header');
-  infoELement = document.getElementById('header-info-element');
-  menuIcon = document.querySelector('header svg:first-child');
-  menuHeader = document.querySelector('.header_menu');
-  backgroundColor = infoELement.dataset.backgroundColor;
-  oldScrollBarToTop = html.scrollTop;
-  isBackgroundTransparent = html.scrollTop === 0 ? true : false;
-  isTransparencyActive = infoELement.dataset.headerTransparencyActive === 'true' ? true : false;
-  headerCart = document.getElementById('header-cart');
-}
-
-function switchHeaderBackground(mode) {
-  if (mode === 'firstDisplay') {
-    setHeaderBackgroundAtFirstDisplay();
-  } else if (mode === 'normal') {
-    setHeaderBackgroundWhenNormal();
-  } else if (mode === 'menu-expanded') {
-    modeColor();
-  }
-}
-
-function setHeaderBackgroundAtFirstDisplay() {
-  if (html.scrollTop < distanceToTopBackgroundChange) {
-    modeTransparent();
-  } else {
-    modeColor();
-  }
-}
-
-function setHeaderBackgroundWhenNormal() {
-  //already displayed
-  if (html.scrollTop <= distanceToTopBackgroundChange && !isBackgroundTransparent) {
-    modeTransparent();
-  } else if (html.scrollTop > distanceToTopBackgroundChange && isBackgroundTransparent) {
-    modeColor();
-  }
-}
-
-function modeTransparent() {
-  changeHeaderBackgroundTo(transparentColor);
-  changeHeaderIconsColor('transparent');
-}
-
-function modeColor() {
-  changeHeaderBackgroundTo(backgroundColor);
-  changeHeaderIconsColor('color');
-}
-
-function changeHeaderBackgroundTo(color) {
-  header.style.background = color;
-  isBackgroundTransparent = color === transparentColor ? true : false;
-}
-
-function changeHeaderIconsColor(mode) {
-  if (mode === 'color') {
-    infoELement.classList.replace('header_svg_fill_colorWhenTransparent', 'header_svg_fill_color');
-  } else {
-    infoELement.classList.replace('header_svg_fill_color', 'header_svg_fill_colorWhenTransparent');
-  }
-}
-
-function switchHeaderPosition() {
-  newScrollBarToTop = html.scrollTop;
-
-  if (newScrollBarToTop < distanceToTopHeaderPosition && headerPosition === 'up') lowersHeader();
-  else if (newScrollBarToTop > distanceToTopHeaderPosition && scrollDirection() === 'down' && headerPosition === 'down') raisesHeader();
-  else if (newScrollBarToTop > distanceToTopHeaderPosition && scrollDirection() === 'up' && headerPosition === 'up') lowersHeader();
-
-  oldScrollBarToTop = newScrollBarToTop;
-}
-
-function scrollDirection() {
-  return newScrollBarToTop > oldScrollBarToTop ? 'down' : 'up';
-}
-
-function raisesHeader() {
-  header.classList.add('translate_up');
-  headerPosition = 'up';
-}
-
-function lowersHeader() {
-  header.classList.remove('translate_up');
+class HeaderSection extends HTMLElement {
+  html;
+  header;
+  infoELement;
+  menuButton;
+  isBackgroundTransparent;
+  backgroundColor;
+  oldScrollBarToTop;
+  newScrollBarToTop;
+  transparentColor = 'transparent';
+  distanceToTopBackgroundChange = 100;
+  distanceToTopHeaderPosition = 20;
+  isTransparencyActive;
   headerPosition = 'down';
-}
+  headerCartButton;
 
-function scrollActions() {
-  if (isTransparencyActive) switchHeaderBackground('normal');
-  switchHeaderPosition();
-}
-
-assignVariables();
-
-//at first display
-if (isTransparencyActive) {
-  switchHeaderBackground('firstDisplay');
-}
-
-Shopify.addListener(document, 'scroll', scrollActions);
-
-//already displayed and after changes in shopify editor
-Shopify.addListener(document, 'shopify:section:load', e => {
-  assignVariables();
-
-  if (isTransparencyActive) {
-    switchHeaderBackground('firstDisplay');
+  constructor() {
+    super();
+    this.html = document.querySelector('html');
+    this.header = this.closest('#shopify-section-header');
+    this.infoELement = this.querySelector('#header-info-element');
+    this.menuButton = this.querySelector('#header-menu');
+    this.backgroundColor = this.infoELement.dataset.backgroundColor;
+    this.oldScrollBarToTop = this.html.scrollTop;
+    this.isBackgroundTransparent = this.html.scrollTop === 0 ? true : false;
+    this.isTransparencyActive = this.infoELement.dataset.headerTransparencyActive === 'true' ? true : false;
+    this.headerCartButton = this.querySelector('#header-cart');
+    this.scrollActionsRef = this.scrollActions.bind(this)
+    this.handleHeaderMenuOpeningRef = this.handleHeaderMenuOpening.bind(this)
+    this.handleHeaderMenuClosingRef = this.handleHeaderMenuClosing.bind(this)
   }
-});
 
-/**
- * drop-down menu part
- */
-function expandMenu() {
-  document.removeEventListener('scroll', scrollActions);
-  menuIcon.removeEventListener('click', expandMenu);
-  Shopify.addListener(menuIcon, 'click', closeMenu);
-  document.body.style.overflow = 'hidden';
-  switchHeaderBackground('menu-expanded');
-  menuHeader.classList.replace('header_menu_hidden', 'header_menu_visible');
+  connectedCallback() {
+    //at first display
+    if (this.isTransparencyActive) {
+      this.switchHeaderBackground('firstDisplay');
+    }
+
+    Shopify.addListener(document, 'scroll', this.scrollActionsRef);
+
+    //part about the header-menu
+    Shopify.addListener(this.menuButton, 'click', this.handleHeaderMenuOpeningRef);
+
+    //create an event to open section/cart-collapse
+    Shopify.addListener(this.headerCartButton, 'click', () => {
+      const openCartCollapseEvent = new Event('openCartCollapse');
+      document.body.dispatchEvent(openCartCollapseEvent);
+      const openCShadowBackgroundEvent = new Event('openShadowBackground');
+      document.body.dispatchEvent(openCShadowBackgroundEvent);
+    });
+
+    //create events to integrate with shopify editor
+    Shopify.addListener(document.body, 'menuExpanded', () => {
+      this.switchHeaderBackground('menu-expanded')
+    });
+
+    Shopify.addListener(document.body, 'menuUnexpanded', () => {
+      this.switchHeaderBackground('firstDisplay')
+    });
+  }
+
+  switchHeaderBackground(mode) {
+    switch (mode) {
+      case 'firstDisplay':
+        this.setHeaderBackgroundAtFirstDisplay();
+        break;
+      case 'normal':
+        this.setHeaderBackgroundWhenNormal();
+        break;
+      case 'menu-expanded':
+        this.modeColor();
+        break;
+    }
+  }
+
+  setHeaderBackgroundAtFirstDisplay() {
+    if (this.html.scrollTop < this.distanceToTopBackgroundChange) {
+      this.modeTransparent();
+    } else {
+      this.modeColor();
+    }
+  }
+
+  setHeaderBackgroundWhenNormal() {
+    //already displayed
+    if (this.html.scrollTop <= this.distanceToTopBackgroundChange && !this.isBackgroundTransparent) {
+      this.modeTransparent();
+    } else if (this.html.scrollTop > this.distanceToTopBackgroundChange && this.isBackgroundTransparent) {
+      this.modeColor();
+    }
+  }
+
+  modeTransparent() {
+    this.changeHeaderBackgroundTo(this.transparentColor);
+    this.changeHeaderIconsColor('transparent');
+  }
+
+  modeColor() {
+    this.changeHeaderBackgroundTo(this.backgroundColor);
+    this.changeHeaderIconsColor('color');
+  }
+
+  changeHeaderBackgroundTo(color) {
+    this.header.style.background = color;
+    this.isBackgroundTransparent = color === this.transparentColor ? true : false;
+  }
+
+  changeHeaderIconsColor(mode) {
+    if (mode === 'color') {
+      this.infoELement.classList.replace('header_svg_fill_colorWhenTransparent', 'header_svg_fill_color');
+    } else {
+      this.infoELement.classList.replace('header_svg_fill_color', 'header_svg_fill_colorWhenTransparent');
+    }
+  }
+
+  switchHeaderPosition() {
+    this.newScrollBarToTop = this.html.scrollTop;
+
+    if (this.newScrollBarToTop < this.distanceToTopHeaderPosition && this.headerPosition === 'up') this.lowersHeader();
+    else if (this.newScrollBarToTop > this.distanceToTopHeaderPosition && this.scrollDirection() === 'down' && this.headerPosition === 'down') this.raisesHeader();
+    else if (this.newScrollBarToTop > this.distanceToTopHeaderPosition && this.scrollDirection() === 'up' && this.headerPosition === 'up') this.lowersHeader();
+
+    this.oldScrollBarToTop = this.newScrollBarToTop;
+  }
+
+  scrollDirection() {
+    return this.newScrollBarToTop > this.oldScrollBarToTop ? 'down' : 'up';
+  }
+
+  raisesHeader() {
+    this.header.classList.add('translate_up');
+    this.headerPosition = 'up';
+  }
+
+  lowersHeader() {
+    this.header.classList.remove('translate_up');
+    this.headerPosition = 'down';
+  }
+
+  scrollActions() {
+    if (this.isTransparencyActive) this.switchHeaderBackground('normal');
+    this.switchHeaderPosition();
+  }
+
+  //Header-menu part
+  handleHeaderMenuOpening() {
+    const openHeaderMenuEvent = new Event('openHeaderMenu');
+    document.body.dispatchEvent(openHeaderMenuEvent);
+    this.handleHeaderListener('open');
+    this.switchHeaderBackground('menu-expanded');
+    this.handleCartDisplay('hide')
+  }
+
+  handleHeaderMenuClosing() {
+    const closeHeaderMenuEvent = new Event('closeHeaderMenu');
+    document.body.dispatchEvent(closeHeaderMenuEvent);
+    this.handleHeaderListener('close');
+    this.switchHeaderBackground('firstDisplay');
+    this.handleCartDisplay('show')
+  }
+
+  handleHeaderListener(action) {
+    switch (action) {
+      case 'open':
+        Shopify.removeListener(document, 'scroll', this.scrollActionsRef);
+        Shopify.removeListener(this.menuButton, 'click', this.handleHeaderMenuOpeningRef);
+        Shopify.addListener(this.menuButton, 'click', this.handleHeaderMenuClosingRef);
+        break;
+      case 'close':
+        Shopify.removeListener(this.menuButton, 'click', this.handleHeaderMenuClosingRef);
+        Shopify.addListener(this.menuButton, 'click', this.handleHeaderMenuOpeningRef);
+        Shopify.addListener(document, 'scroll', this.scrollActionsRef);
+    }
+  }
+
+  handleCartDisplay(action) {
+    switch (action) {
+      case 'hide':
+        this.headerCartButton.style.pointerEvents = 'none'
+        this.headerCartButton.style.visibility = 'hidden'
+        break;
+      case 'show':
+        this.headerCartButton.style.pointerEvents = 'auto'
+        this.headerCartButton.style.visibility = 'visible'
+    }
+  }
 }
 
-function closeMenu() {
-  Shopify.addListener(document, 'scroll', scrollActions);
-  menuIcon.removeEventListener('click', closeMenu);
-  Shopify.addListener(menuIcon, 'click', expandMenu);
-  document.body.style.overflow = 'auto';
-  switchHeaderBackground('firstDisplay');
-  menuHeader.classList.replace('header_menu_visible', 'header_menu_hidden');
-}
-
-//if the menu is expanded
-Shopify.addListener(menuIcon, 'click', expandMenu);
-
-//create an event to open section/cart-collapse
-Shopify.addListener(headerCart, 'click', () => {
-  const openCartCollapseEvent = new Event('openCartCollapse');
-  document.body.dispatchEvent(openCartCollapseEvent);
-  const openCShadowBackgroundEvent = new Event('openShadowBackground');
-  document.body.dispatchEvent(openCShadowBackgroundEvent);
-});
+customElements.define('header-section', HeaderSection);
