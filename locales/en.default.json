@@ -229,10 +229,12 @@
       "remove_title": "Remove {{ title }}",
       "subtotal": "Subtotal",
       "new_subtotal": "New subtotal",
+      "vendor": "Sold by",
       "economy": "You save",
       "note": "Order special instructions",
+      "cart": "Go to cart",
       "checkout": "Check out",
-      "rgpd": "I accept the general condition of sale",
+      "rgpd": "I accept the ",
       "secure-payment": "Secure payment",
       "empty": "Your cart is empty",
       "cart_error": "There was an error while updating your cart. Please try again.",
@@ -251,6 +253,12 @@
       "login": {
         "title": "Have an account?",
         "paragraph_html": "<a href=\"{{ link }}\" class=\"link underlined-link\">Log in</a> to check out faster."
+      },
+      "error": {
+        "rgpd_title": "About RGPD",
+        "rgpd_text": "You must accept the general conditions of sale",
+        "empty_title": "Empty cart",
+        "empty_text": "Your cart does not contain any items, you cannot access the payment methods"
       }
     },
     "footer": {
