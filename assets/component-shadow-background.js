@@ -1,21 +1,24 @@
-let shadowBackground;
+class ShadowBackground extends HTMLElement {
+  constructor() {
+    super();
+    this.innerHTML = '<div id="shadow-background"><br/></div>';
+  }
 
-function assignVariable() {
-  shadowBackground = document.getElementById('shadow-background');
+  connectedCallback() {
+    //create an event to close section/cart-collapse
+    Shopify.addListener(this.firstChild, 'click', () => {
+      const closeCartCollapseEvent = new Event('closeCartCollapse');
+      document.body.dispatchEvent(closeCartCollapseEvent);
+    });
+
+    Shopify.addListener(document.body, 'closeShadowBackground', () => {
+      this.firstChild.style.display = 'none';
+    });
+
+    Shopify.addListener(document.body, 'openShadowBackground', () => {
+      this.firstChild.style.display = 'block';
+    });
+  }
 }
 
-assignVariable();
-
-//create an event to close section/cart-collapse
-Shopify.addListener(shadowBackground, 'click', () => {
-  const closeCartCollapseEvent = new Event('closeCartCollapse');
-  document.body.dispatchEvent(closeCartCollapseEvent);
-});
-
-Shopify.addListener(document.body, 'closeShadowBackground', () => {
-    shadowBackground.style.display = 'none'
-})
-
-Shopify.addListener(document.body, 'openShadowBackground', () => {
-    shadowBackground.style.display = 'block'
-})
+customElements.define('shadow-background', ShadowBackground);
