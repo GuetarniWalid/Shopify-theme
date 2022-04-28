@@ -2,6 +2,12 @@ il manque a traduire :
     "Vous économisez" dans locales.sections.cart.economy dans => all - (en, fr)
     "Paiement sécurisé" dans locales.sections.cart.secure-payment dans => all - (en, fr)
     "J'accepte les conditions générale de vente" dans locales.sections.cart.rgpd dans => all - (en, fr)
+    "À propos du RGPD" dans locales.sections.cart.error.rgpd_title dans => all - (en, fr)
+    "Vous devez accepter les conditions générales de vente" dans locales.sections.cart.error.rgpd_text dans => all - (en, fr)
+    "Vendu par" dans locales.sections.cart.vendor dans => all - (en, fr)
+    "Aller au panier" dans locales.sections.cart.cart dans => all - (en, fr)
+    "Panier vide" dans locales.sections.cart.error.empty_title dans => all - (en, fr)
+    "Votre panier ne contient aucun article, vous ne pouvez accéder aux méthodes de paiement" dans locales.sections.cart.error.empty_text dans => all - (en, fr)
 
 
 

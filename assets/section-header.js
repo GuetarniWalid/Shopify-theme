@@ -25,16 +25,14 @@ class HeaderSection extends HTMLElement {
     this.isBackgroundTransparent = this.html.scrollTop === 0 ? true : false;
     this.isTransparencyActive = this.infoELement.dataset.headerTransparencyActive === 'true' ? true : false;
     this.headerCartButton = this.querySelector('#header-cart');
-    this.scrollActionsRef = this.scrollActions.bind(this)
-    this.handleHeaderMenuOpeningRef = this.handleHeaderMenuOpening.bind(this)
-    this.handleHeaderMenuClosingRef = this.handleHeaderMenuClosing.bind(this)
+    this.scrollActionsRef = this.scrollActions.bind(this);
+    this.handleHeaderMenuOpeningRef = this.handleHeaderMenuOpening.bind(this);
+    this.handleHeaderMenuClosingRef = this.handleHeaderMenuClosing.bind(this);
   }
 
   connectedCallback() {
     //at first display
-    if (this.isTransparencyActive) {
-      this.switchHeaderBackground('firstDisplay');
-    }
+    this.switchHeaderBackground('firstDisplay');
 
     Shopify.addListener(document, 'scroll', this.scrollActionsRef);
 
@@ -45,24 +43,22 @@ class HeaderSection extends HTMLElement {
     Shopify.addListener(this.headerCartButton, 'click', () => {
       const openCartCollapseEvent = new Event('openCartCollapse');
       document.body.dispatchEvent(openCartCollapseEvent);
-      const openCShadowBackgroundEvent = new Event('openShadowBackground');
-      document.body.dispatchEvent(openCShadowBackgroundEvent);
     });
 
     //create events to integrate with shopify editor
     Shopify.addListener(document.body, 'menuExpanded', () => {
-      this.switchHeaderBackground('menu-expanded')
+      this.switchHeaderBackground('menu-expanded');
     });
 
     Shopify.addListener(document.body, 'menuUnexpanded', () => {
-      this.switchHeaderBackground('firstDisplay')
+      this.switchHeaderBackground('firstDisplay');
     });
   }
 
   switchHeaderBackground(mode) {
     switch (mode) {
       case 'firstDisplay':
-        this.setHeaderBackgroundAtFirstDisplay();
+        if (this.isTransparencyActive) this.setHeaderBackgroundAtFirstDisplay();
         break;
       case 'normal':
         this.setHeaderBackgroundWhenNormal();
@@ -148,7 +144,7 @@ class HeaderSection extends HTMLElement {
     document.body.dispatchEvent(openHeaderMenuEvent);
     this.handleHeaderListener('open');
     this.switchHeaderBackground('menu-expanded');
-    this.handleCartDisplay('hide')
+    this.handleCartDisplay('hide');
   }
 
   handleHeaderMenuClosing() {
@@ -156,7 +152,7 @@ class HeaderSection extends HTMLElement {
     document.body.dispatchEvent(closeHeaderMenuEvent);
     this.handleHeaderListener('close');
     this.switchHeaderBackground('firstDisplay');
-    this.handleCartDisplay('show')
+    this.handleCartDisplay('show');
   }
 
   handleHeaderListener(action) {
@@ -176,12 +172,12 @@ class HeaderSection extends HTMLElement {
   handleCartDisplay(action) {
     switch (action) {
       case 'hide':
-        this.headerCartButton.style.pointerEvents = 'none'
-        this.headerCartButton.style.visibility = 'hidden'
+        this.headerCartButton.style.pointerEvents = 'none';
+        this.headerCartButton.style.visibility = 'hidden';
         break;
       case 'show':
-        this.headerCartButton.style.pointerEvents = 'auto'
-        this.headerCartButton.style.visibility = 'visible'
+        this.headerCartButton.style.pointerEvents = 'auto';
+        this.headerCartButton.style.visibility = 'visible';
     }
   }
 }

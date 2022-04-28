@@ -7,12 +7,10 @@
   overflow-y: auto;
   min-width: 350px;
   max-width: 75%;
-  background: #fff;
-  z-index: 15;
+  z-index: 102;
 }
 
 .cart-header {
-  margin-bottom: var(--space);
   position: sticky;
   top: 0;
   left: 0;
@@ -20,14 +18,21 @@
   z-index: 50;
 }
 
+.cart-body {
+  min-height: calc(100vh - 420px);
+}
+
+
+.cart-product-raw-prices {
+  margin-left: unset;
+  min-width: 200px;
+}
+
+.cart-footer {
+  position: sticky;
+  bottom: 0;
+}
+
 .cart-footer-payment {
-    margin: 25px auto;
+  width: 100%;
 }
-
-cart-section-collapse {
-  height: 100%;
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: auto 1fr auto;
-}
-

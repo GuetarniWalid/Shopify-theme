@@ -1,4 +1,6 @@
 #shopify-section-header {
+  background-color: var(--background);
+  position: var(--position);
   width: 100%;
   top: 0px;
   transition: transform 0.25s;
@@ -23,4 +25,17 @@
 
 #shopify-section-header .main-logo {
   display: flex;
+}
+
+#shopify-section-header .header_svg_fill_colorWhenTransparent path {
+  fill: var(--icons-color-when-transparent);
+}
+
+#shopify-section-header .header_svg_fill_color button path {
+  fill: var(--icons-color);
+}
+
+#shopify-section-header a svg {
+  width: auto;
+  height: var(--icon-size);
 }

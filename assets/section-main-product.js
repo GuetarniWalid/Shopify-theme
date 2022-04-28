@@ -58,10 +58,11 @@ class SectionMainProduct {
   }
 
   triggerEvent(json) {
+    //update cart
     const fetchNewProductQtyEvent = new Event('fetchNewProductQty');
     fetchNewProductQtyEvent.json = json;
     document.body.dispatchEvent(fetchNewProductQtyEvent);
-  }
+      }
 }
 
 new SectionMainProduct();

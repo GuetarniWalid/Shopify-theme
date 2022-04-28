@@ -1,8 +1,5 @@
 {
   "sections": {
-    "cart": {
-      "type": "cart"
-    },
     "featured-collection": {
       "type": "featured-collection",
       "settings": {
@@ -25,7 +22,6 @@
     }
   },
   "order": [
-    "cart",
     "featured-collection"
   ]
 }

@@ -1,0 +1,262 @@
+class CartSection extends HTMLElement {
+  customElemName = 'cart-section';
+  sectionName;
+  counters;
+  countersButtons = [];
+  removeButtons;
+  wrapperRows;
+  body;
+  footer;
+  footerCollapseButton;
+  cartButton;
+  checkoutButton;
+  RGPDInput;
+  nbOfDifferenceItems = 0;
+  timer;
+  test = 0
+
+  constructor() {
+    super();
+    this.sectionName = this.querySelector('.cart-header').dataset.sectionId;
+    this.wrapperRows = this.querySelectorAll('.cart-product-raw');
+    this.counters = this.querySelectorAll('.cart-product-raw-counter');
+    this.counters.forEach(counter => {
+      const buttons = counter.querySelectorAll('button');
+      buttons.forEach(button => this.countersButtons.push(button));
+    });
+    this.removeButtons = this.querySelectorAll('.cart-product-raw-title button');
+    this.body = this.querySelector('.cart-body');
+    this.footer = this.querySelector('.cart-footer');
+    this.footerCollapseButton = this.footer.querySelector('.cart-footer-collapse-button');
+    this.RGPDInput = this.footer.querySelector('[name=rgpd]');
+    this.cartButton = this.footer.querySelector('.cart-footer-payment-cart');
+    this.checkoutButton = this.footer.querySelector('.cart-footer-payment-checkout');
+  }
+
+  connectedCallback() {
+    // Add all eventListener
+    //To increment or decrement number of products
+    this.countersButtons.forEach(countersButton => Shopify.addListener(countersButton, 'click', this.updateCart.bind(this, countersButton)));
+    this.removeButtons.forEach(removeButton => Shopify.addListener(removeButton, 'click', this.updateCart.bind(this, removeButton)));
+
+    //To remove cards
+    this.wrapperRows.forEach(wrapperRow => {
+      Shopify.addListener(wrapperRow, 'transitionend', this.animateCardRemove.bind(this));
+    });
+
+    //To check RGPD and that the cart is not empty
+    if (this.checkoutButton) {
+      Shopify.addListener(this.checkoutButton, 'click', e => {
+        e.preventDefault();
+
+        const isRGPDValid = this.checkRGPD(e);
+        if (!isRGPDValid) return;
+
+        this.checkCartNotEmpty(e);
+      });
+      Shopify.addListener(this.checkoutButton, 'animationend', e => {
+        if (e.animationName === 'nope') {
+          e.target.classList.remove('animated-button-nope');
+        }
+      });
+    }
+  }
+
+  updateCart(buttonListener) {
+    const { wrapperRow, qtyBox, rowPrices, spinners, footerPrices } = this.selectRowNodes(buttonListener);
+    this.disabledOtherRows(wrapperRow);
+    this.disabledPaymentButtons();
+    const newQty = this.calculateNewQty(buttonListener);
+    this.updateQtyBox(qtyBox, newQty);
+    const { forceSold, isMaxReached } = this.toggleCounterButtons(wrapperRow, newQty);
+    this.toggleSoldoutBanner(wrapperRow, forceSold, isMaxReached);
+    this.enableLoading(rowPrices, spinners, footerPrices);
+
+    // to handle debounce
+    clearTimeout(this.timer);
+    this.timer = setTimeout(async () => {
+      try {
+        const json = await this.fetchData(wrapperRow.dataset.variantId, newQty);
+        if (newQty === 0) this.removeCard(wrapperRow, json);
+        else this.updateHTML(json.sections);
+      } catch (error) {
+        location.reload();
+      }
+    }, 500);
+  }
+
+  selectRowNodes(buttonListener) {
+    const wrapperRow = buttonListener.closest('.cart-product-raw');
+    const qtyBox = wrapperRow.querySelector('.cart-product-raw-img-box span');
+    const rowPrices = wrapperRow.querySelectorAll('.cart-product-raw-prices .price');
+    const rowSpinners = wrapperRow.querySelectorAll('.cart-product-raw-prices .loading-overlay__spinner');
+    const footerSpinners = this.footer.querySelectorAll('ul .loading-overlay__spinner');
+    const footerPrices = this.footer.querySelectorAll('.cart-footer-price');
+
+    return {
+      wrapperRow,
+      qtyBox,
+      rowPrices,
+      spinners: [...rowSpinners, ...footerSpinners],
+      footerPrices,
+    };
+  }
+
+  disabledOtherRows(currentWrapperRow) {
+    this.wrapperRows.forEach(wrapperRow => {
+      if (!wrapperRow.isEqualNode(currentWrapperRow)) {
+        const buttons = wrapperRow.querySelectorAll('button');
+        buttons.forEach(button => (button.disabled = true));
+      }
+    });
+  }
+
+  disabledPaymentButtons() {
+    if (this.checkoutButton) this.checkoutButton.style.pointerEvents = 'none';
+    if (this.cartButton) this.cartButton.style.pointerEvents = 'none';
+  }
+
+  calculateNewQty(currentButton) {
+    const qty = Number(currentButton.dataset.quantity);
+    switch (currentButton.dataset.role) {
+      case 'add':
+        return qty + ++this.nbOfDifferenceItems;
+      case 'minus':
+        const isMinimumReached = -this.nbOfDifferenceItems + 1 >= qty;
+        if (!isMinimumReached) this.nbOfDifferenceItems--;
+        return qty + this.nbOfDifferenceItems;
+      case 'delete':
+        this.nbOfDifferenceItems = -qty;
+        return 0;
+    }
+  }
+
+  updateQtyBox(box, newQty) {
+    box.innerHTML = newQty.toString();
+  }
+
+  toggleCounterButtons(row, newQty) {
+    const minusButton = row.querySelector('[data-role=minus]');
+    const plusButton = row.querySelector('[data-role=add]');
+    const minQty = Number(minusButton.dataset.minQty);
+    const maxQty = Number(plusButton.dataset.maxQty);
+    const forceSold = plusButton.dataset.inventoryPolicy === 'continue';
+    const isMaxReached = newQty >= maxQty;
+    minusButton.disabled = newQty <= minQty ? true : false;
+    plusButton.disabled = isMaxReached && !forceSold ? true : false;
+    return { forceSold, isMaxReached };
+  }
+
+  toggleSoldoutBanner(wrapperRow, forceSold, isMaxReached) {
+    const imgBox = wrapperRow.querySelector('.cart-product-raw-img-box');
+    imgBox.classList.toggle('sold-out', !forceSold && isMaxReached);
+  }
+
+  enableLoading(rowPrices, spinners, footerPrices) {
+    rowPrices.forEach(rowPrice => rowPrice.classList.add('hidden'));
+    footerPrices.forEach(footerPrice => footerPrice.classList.add('hidden'));
+    spinners.forEach(spinner => {
+      spinner.classList.remove('hidden');
+      spinner.firstChild.nextSibling.setAttribute('aria-hidden', false);
+    });
+    document.activeElement.blur();
+  }
+
+  async fetchData(id, quantity) {
+    //reset the counter of click
+    this.nbOfDifferenceItems = 0;
+    this.countersButtons.forEach(button => (button.disabled = true));
+    this.removeButtons.forEach(button => (button.disabled = true));
+
+    const body = JSON.stringify({
+      id,
+      quantity,
+      sections: this.sectionName,
+    });
+    const response = await fetch(`${routes.cart_change_url}`, { ...fetchConfig(), ...{ body } });
+    const json = await response.json();
+    return json;
+  }
+
+  updateHTML(sections) {
+    try {
+      const newHTML = this.getSectionHTML(sections[this.sectionName], this.customElemName);
+      if (!newHTML) throw new Error('no html to parse');
+      this.replaceWith(newHTML);
+    } catch (error) {
+      location.reload();
+    }
+  }
+
+  getSectionHTML(html, selector) {
+    return new DOMParser().parseFromString(html, 'text/html').querySelector(selector);
+  }
+
+  removeCard(node, json) {
+    node.json = json;
+    node.classList.add('remove');
+  }
+
+  animateCardRemove(e) {
+    if (e.propertyName === 'opacity') {
+      const height = e.target.scrollHeight;
+      requestAnimationFrame(() => {
+        e.target.style.height = height + 'px';
+        requestAnimationFrame(() => {
+          e.target.style.margin = '0';
+          e.target.style.padding = '0';
+          e.target.style.height = '0';
+        });
+      });
+    }
+    if (e.propertyName === 'height') {
+      this.updateHTML(e.target.json.sections);
+    }
+  }
+
+  triggerClick(e) {
+    const clickEvent = new MouseEvent('click');
+    clickEvent.info = 'simulatedEvent';
+    e.target.dispatchEvent(clickEvent);
+  }
+
+  checkRGPD(e) {
+    //To send the form, no more treatment in this case
+    if (e.info === 'simulatedEvent') return;
+
+    if (this.RGPDInput && !this.RGPDInput.checked) {
+      const noticeCard = new Event('showNoticeCard');
+      noticeCard.payload = {
+        status: 'error',
+        title: "{{ 'sections.cart.error.rgpd_title' | t }}",
+        text: "{{ 'sections.cart.error.rgpd_text' | t }}",
+        side: 'left',
+      };
+      document.body.dispatchEvent(noticeCard);
+      e.target.classList.add('animated-button-nope');
+      return false;
+    } else return true;
+  }
+
+  checkCartNotEmpty(e) {
+    const nbItems = Number(e.target.dataset.nbItems);
+    if (nbItems === 0) {
+      const noticeCard = new Event('showNoticeCard');
+      noticeCard.payload = {
+        status: 'error',
+        title: "{{ 'sections.cart.error.empty_title' | t }}",
+        text: "{{ 'sections.cart.error.empty_text' | t }}",
+        side: 'left',
+      };
+      document.body.dispatchEvent(noticeCard);
+      e.target.classList.add('animated-button-nope');
+    } else {
+      this.triggerClick(e);
+      e.target.querySelector('.loading-overlay__spinner').classList.remove('hidden');
+      e.target.classList.add('animated-button-ok');
+      return true;
+    }
+  }
+}
+
+customElements.define('cart-section', CartSection);

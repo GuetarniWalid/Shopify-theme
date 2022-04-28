@@ -53,11 +53,10 @@ class NoticeCard extends HTMLElement {
   connectedCallback() {
     this.card = this.querySelector('.notice-card');
 
-    //to close by hte cross
+    //to close by the cross
     Shopify.addListener(this.querySelector('svg'), 'click', this.removeCard.bind(this));
 
     //trigger timer
-    Shopify.removeListener(this.querySelector('svg'), 'click', this.removeCard);
     this.timer = setTimeout(() => {
       this.removeCard();
     }, 5000);
@@ -134,29 +133,4 @@ customElements.define('notice-card', NoticeCard);
 Shopify.addListener(document.body, 'showNoticeCard', e => {
   const { status, title, text, side } = e.payload;
   new NoticeCard(status, title, text, side);
-});
-
-//Part specific to Shopify Editor
-let isCardVisible = false;
-let noticeCard;
-Shopify.addListener(document, 'shopify:section:select', e => {
-  if (e.detail.sectionId !== 'notice-card') return;
-
-  //Display a notice card
-  noticeCard = new NoticeCard('error', 'Insufficient quantity', 'The quantity of selected product exceeds the available stock');
-  if (isCardVisible) noticeCard.querySelector('.appear').style.animation = 'none';
-
-  //Disable counter
-  if (isCardVisible) noticeCard.querySelector('.notice-card-time-bar').style.animation = 'none';
-  clearTimeout(noticeCard.timer);
-
-  isCardVisible = true;
-});
-
-Shopify.addListener(document, 'shopify:section:deselect', e => {
-  if (e.detail.sectionId !== 'notice-card') return;
-
-  //Remove the notice card
-  noticeCard.removeCard();
-  isCardVisible = false;
 });

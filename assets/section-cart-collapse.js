@@ -1,29 +1,36 @@
 class CartSectionCollapse extends CartSection {
   closeButton;
+  updateFromOutsideRef;
 
   constructor() {
     super();
+    this.customElemName = 'cart-section-collapse';
     this.closeButton = this.querySelector('.cart-header button');
+    this.updateFromOutsideRef = this.updateFromOutside.bind(this)
+    this.openCartCollapseRef = this.openCartCollapse.bind(this)
+    this.closeCartCollapseRef = this.closeCartCollapse.bind(this)
   }
 
   connectedCallback() {
-    super.connectedCallback()
+    super.connectedCallback();
     //to avoid a transition at first display, transition is set here
     this.parentElement.style.transition = 'transform 0.3s ease-out';
-    
+
     //To close cart-collapse
     Shopify.addListener(this.closeButton, 'click', this.triggerCloseEvent);
-    Shopify.addListener(document.body, 'closeCartCollapse', this.closeCartCollapse.bind(this));
-    
+    Shopify.addListener(document.body, 'closeCartCollapse', this.closeCartCollapseRef);
+
     //To open cart-collapse
-    Shopify.addListener(document.body, 'openCartCollapse', this.openCartCollapse.bind(this));
+    Shopify.addListener(document.body, 'openCartCollapse', this.openCartCollapseRef);
+
+    //To update when a product is added from elsewhere
+    Shopify.addListener(document.body, 'fetchNewProductQty', this.updateFromOutsideRef);
   }
-  
+
   disconnectedCallback() {
-    super.disconnectedCallback()
-    Shopify.removeListener(this.closeButton, 'click', this.updateCart);
-    Shopify.removeListener(document.body, 'click', this.updateCart);
-    Shopify.removeListener(document.body, 'click', this.updateCart);
+    Shopify.removeListener(document.body, 'fetchNewProductQty', this.updateFromOutsideRef)
+    Shopify.removeListener(document.body, 'openCartCollapse', this.openCartCollapseRef)
+    Shopify.removeListener(document.body, 'closeCartCollapse', this.closeCartCollapseRef)
   }
 
   triggerCloseEvent() {
@@ -39,32 +46,17 @@ class CartSectionCollapse extends CartSection {
   }
 
   openCartCollapse() {
+    const openCShadowBackgroundEvent = new Event('openShadowBackground');
+    document.body.dispatchEvent(openCShadowBackgroundEvent);
     document.body.style.overflow = 'hidden';
     this.parentElement.style.transform = 'translateX(0)';
+  }
+
+  updateFromOutside(e) {
+    this.updateHTML(e.json.sections);
+    const openCartCollapseEvent = new Event('openCartCollapse');
+    document.body.dispatchEvent(openCartCollapseEvent);
   }
 }
 
 customElements.define('cart-section-collapse', CartSectionCollapse);
-
-
-//Part specific to Shopify Editor
-let isCartCollapseOpen = false
-Shopify.addListener(document, 'shopify:section:select', (e) => {
-  if(e.detail.sectionId !== 'cart') return
-  if(isCartCollapseOpen) e.target.style.transition = 'none'
-  const openCartCollapseEvent = new Event('openCartCollapse');
-  document.body.dispatchEvent(openCartCollapseEvent);
-  const openCShadowBackgroundEvent = new Event('openShadowBackground');
-  document.body.dispatchEvent(openCShadowBackgroundEvent);
-  isCartCollapseOpen = true
-})
-
-Shopify.addListener(document, 'shopify:section:deselect', (e) => {
-  if(e.detail.sectionId !== 'cart') return
-  e.target.style.transition = 'transform 0.3s ease-out'
-  const closeCartCollapseEvent = new Event('closeCartCollapse');
-  document.body.dispatchEvent(closeCartCollapseEvent);
-  const closeCShadowBackgroundEvent = new Event('closeShadowBackground');
-  document.body.dispatchEvent(closeCShadowBackgroundEvent);
-  isCartCollapseOpen = false
-})

@@ -3,11 +3,12 @@
     {{ 'section-cart-collapse.css' | asset_url | stylesheet_tag }}
 {%- endif -%}
 {{ 'component-checkbox.css' | asset_url | stylesheet_tag }}
+{{ 'component-loading-overlay.css' | asset_url | stylesheet_tag }}
 
 {%- style -%}
 #shopify-section-{{ section.id }}.cart-section {
     --space: 2rem;
-    --counter-height: 30px;
+    --counter-height: 50px;
     --cart-background: {{ section.settings.background }};
     --card-color: {{ section.settings.card_color }};
     --button-color: {{ section.settings.button_color }};
@@ -20,6 +21,8 @@
     --checkout-button-background: {{ section.settings.checkout_button_background }};
     --checkout-button-color: {{ section.settings.checkout_button_color }};
     --form-control-color: var(--footer-font-color);
+    --footer-extra-background: {{ section.settings.footer_extra_background }};
+    --footer-extra-color: {{ section.settings.footer_extra_color }};
 }
 {%- endstyle -%}
 
@@ -38,7 +41,8 @@
 {%- else -%}
     <cart-section-collapse>
 {%- endif -%}
-    <div class="cart-header {% if template.name == 'cart' %}page-width{%- endif -%}" data-section-id="{{ section.id }}" data-template="{{ template.name }}" >
+    <div class="cart-header" data-section-id="{{ section.id }}" data-template="{{ template.name }}" >
+      <div>
         <h2>
             {%- if section.settings.heading != blank -%}
                 {{ section.settings.heading }}       
@@ -47,23 +51,25 @@
             {%- endif -%}
         </h2>
         {%- if template.name == 'cart' -%}
-            <a href="#">{{ 'general.continue_shopping' | t }}</a>
+            <a onclick="history.back()" style="cursor:pointer;">{{ 'general.continue_shopping' | t }}</a>
         {%- else -%}
             <button type="button">
                 {% render 'icon-close' %}
             </button>
         {%- endif -%}
+      </div>
     </div>
-    <div class="cart-body {% if template.name == 'cart' %}page-width{%- endif -%}">
+    <div class="cart-body {% if cart.items.size == 0 %}cart-body-empty {% endif %}{% if template.name == 'cart' %}page-width{%- endif -%}">
         {% if cart.items.size == 0 %}
-            <h2 class="cart-empty">{{ 'sections.cart.empty' | t }}</h2>
-        {% else %}
-            {% for item in cart.items %}
-                <div class="cart-product-raw" data-variant-id="{{ item.variant_id }}" data-index="{{ forloop.index | minus: 1 }}">
-                    <div class="cart-product-raw-img-box">
+          <p>{{ 'sections.cart.empty' | t }}</p>
+          {% render 'icon-empty-box' %}
+        {% else %}    
+        {% for item in cart.items %}
+                <div class="cart-product-raw" data-variant-id="{{ item.key }}" data-index="{{ forloop.index | minus: 1 }}">
+                    <div class="cart-product-raw-img-box {% if item.quantity >= item.variant.inventory_quantity and item.variant.inventory_policy == 'deny' %}sold-out{% endif %}">
                         {% liquid
                             if item.product.has_only_default_variant and item.image != blank
-                                echo item.image | image_url: width: 112 | image_tag: srcset: nil
+                                echo item.image | image_url: height: 112 | image_tag: srcset: nil
                             elsif item.variant.image.src != blank
                                 echo item.variant.image.src | image_url: width: 112 | image_tag: srcset: nil
                             endif 
@@ -79,82 +85,141 @@
                                 <p>{{ item.variant.title }}</p>
                             {% endunless %}
                         </div>
-                        <button type="button" data-quantity="0">
+                        <button type="button" data-quantity="{{ item.quantity }}" data-role="delete" data-min-qty="0">
                             {% render 'icon-remove' %}
                         </button>
                     </div>
                     <div class="cart-product-raw-counter">
-                        <button data-quantity="{{ item.quantity | minus: 1 }}" {% if item.quantity == 1 %}disabled{% endif %}>{% render 'icon-minus' %}</button>
-                        <button data-quantity="{{ item.quantity | plus: 1 }}">{% render 'icon-plus' %}</button>
+                        <button data-quantity="{{ item.quantity }}" data-min-qty="1" data-role="minus" {% if item.quantity == 1 %}disabled{% endif %}>{% render 'icon-minus' %}</button>
+                        <button data-quantity="{{ item.quantity }}" data-max-qty="{{ item.variant.inventory_quantity }}" data-inventory-policy="{{ item.variant.inventory_policy }}" data-role="add" {% if item.quantity >= item.variant.inventory_quantity and item.variant.inventory_policy == 'deny' %}disabled{% endif %}>{% render 'icon-plus' %}</button>
                     </div>
-                    <div class="cart-product-raw-prices">
-                        {% render 'icon-loading' %}
-                        <p>
-                            {% assign original_price = item.variant.compare_at_price | times: item.quantity %}
-                            {% if original_price != item.final_line_price and original_price > 0 %}
-                                <span>
-                                    {%- if section.settings.show_crossed_price -%}
-                                        <s>{{ original_price | money }}</s>
+                    <ul class="cart-product-raw-prices">
+                        <li>
+                            <p>
+                                {{ 'sections.cart.vendor' | t }}:
+                            </p>
+                            <div>
+                                <p>
+                                    {{ item.vendor }}
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <p>
+                                {{ 'sections.cart.headings.price' | t }}:
+                            </p>
+                            <div>
+                                {% render 'icon-loading' %}
+                                <p class="price">
+                                    {%- if section.settings.show_crossed_price and item.variant.compare_at_price != item.original_price and item.variant.compare_at_price > 0 -%}
+                                        <s>{{ item.variant.compare_at_price | money }}</s>
                                     {%- endif -%}
-                                </span>
-                            {% endif %}
-                            <span>
-                                {{ item.final_line_price | money }}
-                            </span>
-                        </p>
-                    </div>
+                                    {{ item.original_price | money }}
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <p>
+                                {{ 'sections.cart.headings.total' | t }}:
+                            </p>
+                            <div>
+                                {% render 'icon-loading' %}
+                                {% assign original_price = item.variant.compare_at_price | times: item.quantity %}
+                                <p class="price">
+                                    {% if original_price != item.final_line_price and original_price > 0 and section.settings.show_crossed_price %}
+                                        <s>{{ original_price | money }}</s>
+                                    {% endif %}
+                                    {{ item.final_line_price | money }}
+                                </p>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
             {% endfor %}
         {% endif %}
     </div>
-    <div class="cart-footer {% if template.name == 'cart' %}page-width{%- endif -%}">
-        <div class="cart-footer-wrapper">
+    <div class="cart-footer ">
+        <div class="cart-footer-wrapper {% if template.name == 'cart' %}page-width{%- endif -%}">
             <ul>
+              {% if totalDiscount != 0 %}
                 <li>
-                    {{ "sections.cart.economy" | t }} :
+                    <p>{{ "sections.cart.economy" | t }} :</p>
                     <div>
                         {% render 'icon-loading' %}
-                        <span class="cart-footer-price">{{ totalDiscount | money }}</span>
+                        <p class="cart-footer-price">{{ totalDiscount | money }}</p>
                     </div>
                 </li>
+              {% endif %}
                 <li>
-                    {{ "sections.cart.subtotal" | t }} :
+                    <p>{{ "sections.cart.subtotal" | t }} :</p>                  
                     <div>
                         {% render 'icon-loading' %}
-                        <span class="cart-footer-price">
-                            {% if section.settings.show_crossed_price %}
+                        <p class="cart-footer-price">
+                            {% if section.settings.show_crossed_price and totalDiscount != 0 %}
                                 <s>{{ cart.original_total_price | plus: totalDiscount | money }}</s>
                             {% endif %}
                             {{ cart.total_price | money }}  
-                        </span>                      
+                        </p>                      
                     </div>
                 </li>
             </ul>
-            {% if section.settings.cgv %}
+            {% if section.settings.cgv and section.settings.CGV_link != blank %}
                 <label class="form-control">
                     <input type="checkbox" name="rgpd" />
-                    {{ 'sections.cart.rgpd' | t }}
+                    <span class="rgpd">
+                        {{ 'sections.cart.rgpd' | t }}
+                        {{ 'CGV' | link_to: section.settings.CGV_link.url }}
+                    </span>
                 </label>                
             {% endif %}
             <div class="cart-footer-payment">
+                <p class="cart-footer-payment-extra">{{ section.settings.footer_extra_text }}</p>
                 {%- if template.name != 'cart' and section.settings.payment_buttons == 'show_both' or section.settings.payment_buttons == 'show_cart_button' -%}
                     <a class="cart-footer-payment-cart" href="/cart">
-                        {% render 'icon-card-padlock' %}
-                        {{ "sections.cart.secure-payment" | t }}
+                        {% if section.settings.show_cart_logo %}
+                            {% render 'icon-cart' %}
+                        {% endif %}
+                        {{ "sections.cart.cart" | t }}
                     </a>
-                {%- endif -%}
-                {%- if template.name == 'cart' or section.settings.payment_buttons == 'show_both' or section.settings.payment_buttons == 'show_checkout_button' -%}
+                    {%- endif -%}
+                    {%- if template.name == 'cart' or section.settings.payment_buttons == 'show_both' or section.settings.payment_buttons == 'show_checkout_button' -%}
                     <form action="{{ routes.cart_url }}" method="post">              
-                        <button class="cart-footer-payment-checkout" type="submit" name="checkout" value="Checkout">
+                        <button class="cart-footer-payment-checkout" type="submit" name="checkout" value="Checkout" data-nb-items="{{ cart.item_count }}">
+                            {% render 'icon-loading' %}
+                            {% if section.settings.show_checkout_logo %}
+                                {% render 'icon-card-padlock' %}
+                            {% endif %}
                             {{ 'sections.cart.checkout' | t }}
                         </button>
                     </form>
                 {%- endif -%}
                 <div class="cart-footer-payment-logo">
-                    {% render 'icon-card-padlock' %}
-                    {% render 'icon-mastercard' %}
-                    {% render 'icon-visa' %}
-                    {% render 'icon-paypal' %}
+                    {%- liquid
+                        if section.settings.show_cb
+                            render 'icon-cb'
+                        endif
+                        if section.settings.show_amex
+                            render 'icon-amex'
+                        endif 
+                        if section.settings.show_google
+                            render 'icon-google'
+                        endif 
+                        if section.settings.show_apple
+                            render 'icon-apple'
+                        endif
+                        if section.settings.show_mastercard
+                            render 'icon-mastercard'
+                        endif
+                        if section.settings.show_visa
+                            render 'icon-visa'
+                        endif
+                        if section.settings.show_paypal
+                            render 'icon-paypal'
+                        endif
+                        if section.settings.show_amazone
+                            render 'icon-amazone'
+                        endif
+                    -%}
                 </div>
             </div>
         </div>
@@ -188,22 +253,22 @@
       "type": "color_background",
       "id": "footer_background",
       "label": "Background",
-      "default": "#000",
+      "default": "linear-gradient(127deg, rgba(254, 91, 124, 1), rgba(99, 192, 254, 1) 35%, rgba(254, 206, 107, 1) 68%, rgba(255, 15, 15, 1) 100%)",
       "info": "Also applied to footer"
     },
     {
       "type": "color",
       "id": "footer_font_color",
       "label": "Font color",
-      "default": "#fff",
+      "default": "#000",
       "info": "Also applied to footer"
     },
     {
-    "type": "text",
-    "id": "heading",
-    "label": "Heading",
-    "info": "replace default title (optional)"
-    }, 
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "info": "replace default title (optional)"
+    },
     {
       "type": "header",
       "content": "Body"
@@ -215,20 +280,20 @@
       "default": "#fff"
     },
     {
-        "type": "header",
-        "content": "Cards"
-    },  
+      "type": "header",
+      "content": "Body Cards"
+    },
     {
       "type": "color_background",
       "id": "card_color",
       "label": "Card color",
-      "default": "#000"
+      "default": "linear-gradient(127deg, rgba(254, 91, 124, 1), rgba(99, 192, 254, 1) 35%, rgba(254, 206, 107, 1) 68%, rgba(255, 15, 15, 1) 100%)"
     },
     {
       "type": "color_background",
       "id": "button_color",
       "label": "Button color",
-      "default": "#fca311"
+      "default": "#fff"
     },
     {
       "type": "color",
@@ -247,14 +312,52 @@
       "default": 30
     },
     {
-        "type": "checkbox",
-        "id": "show_crossed_price",
-        "label": "Show crossed out prices",
-        "default": true
+      "type": "checkbox",
+      "id": "show_crossed_price",
+      "label": "Show crossed out prices",
+      "default": true
     },
     {
       "type": "header",
-      "content": "Footer"
+      "content": "Footer RGPD (optional)"
+    },
+    {
+      "type": "checkbox",
+      "id": "cgv",
+      "label": "Show CGV",
+      "default": true,
+      "info": "Visible only if you select a page just below"
+    },
+    {
+      "type": "page",
+      "id": "CGV_link",
+      "label": "Page to the CGV",
+      "info": "Useful only if you have checked \"Show CGV\" just above"
+    },
+    {
+      "type": "header",
+      "content": "Footer additional text (optional)"
+    },
+    {
+      "type": "text",
+      "id": "footer_extra_text",
+      "label": "Text above payment buttons"
+    },
+    {
+      "type": "color_background",
+      "id": "footer_extra_background",
+      "label": "Additional text background",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "footer_extra_color",
+      "label": "Additional text color",
+      "default": "#fff"
+    },
+    {
+      "type": "header",
+      "content": "Footer payment buttons"
     },
     {
       "type": "select",
@@ -290,6 +393,12 @@
       "default": "#fff"
     },
     {
+      "type": "checkbox",
+      "id": "show_cart_logo",
+      "label": "Show cart logo",
+      "default": true
+    },
+    {
       "type": "color_background",
       "id": "checkout_button_background",
       "label": "Checkout button background",
@@ -302,11 +411,62 @@
       "default": "#fff"
     },
     {
-        "type": "checkbox",
-        "id": "cgv",
-        "label": "Show CGV",
-        "default": true,
-        "info": "For RGPD"
+      "type": "checkbox",
+      "id": "show_checkout_logo",
+      "label": "Show checkout logo",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Footer payment logo"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cb",
+      "label": "Show cb",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_amex",
+      "label": "Show american express",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_google",
+      "label": "Show google pay",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_apple",
+      "label": "Show apple pay",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_mastercard",
+      "label": "Show mastercard",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_visa",
+      "label": "Show visa",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_paypal",
+      "label": "Show paypal",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_amazone",
+      "label": "Show amazone pay",
+      "default": false
     }
   ]
 }

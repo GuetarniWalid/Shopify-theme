@@ -207,6 +207,9 @@
       document.documentElement.classList.add('shopify-design-mode');
     }
     </script>
+    {%- if request.design_mode -%}
+      <script src="{{ 'theme-editor.js' | asset_url }}" defer="defer"></script>
+    {%- endif -%}
   </head>
 
   <body class="gradient">
