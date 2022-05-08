@@ -218,9 +218,11 @@
     </a>
 
     {%- liquid
-      section 'header' 
-      section 'header-menu' 
-      section 'cart'
+      if template.name != 'product'
+        section 'header' 
+        section 'header-menu' 
+        section 'cart'
+      endif
       render 'component-shadow-background'
       section 'notice-card' 
     %}

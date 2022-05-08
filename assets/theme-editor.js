@@ -33,6 +33,8 @@ Shopify.addListener(document.body, 'shopify:section:select', e => {
     case 'cart':
       cartCollapseOpen(e);
       break;
+    default:
+      if (e.detail.sectionId.includes('product-carousel')) productCarouselOpen(e)
   }
 });
 
@@ -84,7 +86,6 @@ function headerMenuClose(e) {
 
 //section-notice-card
 let noticeCard;
-
 function noticeCardOpen() {
   //Display a notice card
   noticeCard = new NoticeCard('error', 'Insufficient quantity', 'The quantity of selected product exceeds the available stock');
@@ -130,4 +131,17 @@ function cartCollapseClose(e) {
   const closeCShadowBackgroundEvent = new Event('closeShadowBackground');
   document.body.dispatchEvent(closeCShadowBackgroundEvent);
   sectionOpen = false;
+}
+
+//section-product-carousel
+function productCarouselOpen(e) {
+  console.log('reaffiche');
+  const productCarousel = e.target.querySelector('product-carousel-section');
+  const mainSplide = productCarousel.mainSplide
+
+  mainSplide.on('active', (target) => {
+    Shopify.section = Shopify.section ?? {}
+    Shopify.section.productCarousel = Shopify.section.productCarousel ?? {}
+    Shopify.section.productCarousel.selectedMediaIndex = target.index
+  })  
 }

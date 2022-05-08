@@ -1,0 +1,504 @@
+{{ 'library-splide-core.min.css' | asset_url | stylesheet_tag }}
+{{ 'section-product-carousel.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} {
+    --image-fit: {{ section.settings.carousel_image_fit }};
+    --main-image-width: {% if section.settings.carousel_image_fit == 'contain' %}{{ section.settings.carousel_main_image_size }}%{% else %}100%{% endif %};
+    --main-image-height: {% if section.settings.carousel_image_fit == 'contain' %}auto{% else %}100%{% endif %};
+    --main-image-position: {{ section.settings.carousel_main_image_position }}vh;
+    --background: {% if section.settings.carousel_image_fit == 'contain' %}{{ section.settings.carousel_background }}{% else %}transparent{% endif %};
+    --main-image-gradient: {% if section.settings.carousel_main_image_gradient %}0 0 30px 40px var(--background){% else %}none{% endif %};
+    --dot-bottom: {{ section.settings.carousel_dots_position }}px;
+    --dot-selected-color: {{ section.settings.carousel_selected_dot_color }};
+    --dot-dots-color: {{ section.settings.carousel_dots_color }};
+
+    {%- for block in section.blocks -%}
+      {%- case block.type -%}
+        {%- when 'thumbnail' -%}
+          --thumbnails-percent-size: {{ block.settings.carousel_thumbnail_size }};
+          --thumbnail-position: {{ block.settings.carousel_thumbnail_position }}px;
+          --thumbnail-selected-border-size: {{ block.settings.carousel_thumbnail_border_size }}px;
+          --thumbnail-selected-color: {{ block.settings.carousel_thumbnail_border_color }};
+        {% when 'badge' %}
+          --badge-bottom: {{ block.settings.carousel_badge_position }}rem;
+          --badge-size: {{ block.settings.carousel_badge_size }}rem;
+          --badge-radius: {{ block.settings.carousel_badge_radius }}px;
+          --dot-bottom: calc({{ section.settings.carousel_dots_position }}px + var(--badge-size) + 30px);
+      {%- endcase -%}     
+    {%- endfor -%}
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign mediaListSorted = null | sort
+
+  if product.has_only_default_variant
+    assign first_media = product.featured_media | sort
+  else
+    assign first_media = product.selected_or_first_available_variant.featured_media | sort
+  endif
+  assign mediaListSorted = mediaListSorted | concat: first_media
+
+  for media in product.media
+    if media.id != first_media[0].id
+      assign other_media = media | sort
+      assign mediaListSorted = mediaListSorted | concat: other_media
+    endif
+  endfor
+-%}
+
+<product-carousel-section data-image-fit="{{ section.settings.carousel_image_fit }}">
+  <div id="main-carousel" class="splide">
+    <div class="splide__track">
+      <ul class="splide__list">
+        {%- for media in mediaListSorted -%}
+          {%- if media.media_type == 'image' -%}
+            <li class="splide__slide">
+              <div class="image-gradient"></div>
+              {{ media | image_url: width: 2000 | image_tag: class: 'product-media' }}
+              <div class="image-gradient"></div>
+            </li>
+          {%- endif -%}
+        {%- endfor -%}
+      </ul>
+    </div>
+  </div>
+
+  {%- for block in section.blocks -%}
+    {%- case block.type -%}
+      {%- when 'thumbnail' -%}
+        <div id="thumbnail-carousel" class="splide" data-thumbnail-type="{{ section.settings.carousel_thumbnail_type }}">
+          <div class="splide__track">
+            <ul class="splide__list">
+              {% for media in mediaListSorted %}
+              {% if media.media_type == 'image' %}
+                <li class="splide__slide">
+                    {{ media | image_url: width: 2000 | image_tag: class: 'product-media' }}
+                </li>
+              {% endif %}
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+        {% style %}
+          {% if block.settings.carousel_thumbnail_no_border %}
+            #thumbnail-carousel .splide__slide {
+              opacity: 0.6;
+            }
+
+            #thumbnail-carousel .splide__slide.is-active {
+              opacity: 1;
+            }
+          {% else %}
+            #thumbnail-carousel .splide__slide {
+              margin: var(--thumbnail-selected-border-size) 0;
+            }
+
+            #thumbnail-carousel .splide__slide.is-active:before {
+              content: "";
+              display: block;
+              position: absolute;
+              top: calc(var(--thumbnail-selected-border-size) * -0.5);
+              left: calc(var(--thumbnail-selected-border-size) * -0.5);
+              border-radius: 50%;
+              width: calc(80vh * var(--thumbnails-percent-size) / 100 + var(--thumbnail-selected-border-size));
+              height: calc(80vh * var(--thumbnails-percent-size) / 100 + var(--thumbnail-selected-border-size));
+              background: var(--thumbnail-selected-color);
+              z-index: -1;
+            }
+          {% endif %}
+        {% endstyle %}
+      {%- when 'badge' -%}
+        <div class="product-carousel-badge-container">
+          {% assign nb_badges = 0 %}
+          {% if block.settings.carousel_badge_text_1 != blank or block.settings.carousel_badge_svg_1 != blank %}
+            {% assign nb_badges = nb_badges | plus: 1 %}
+            <div class="product-carousel-badge-wrapper">
+              {{ block.settings.carousel_badge_svg_1 }}
+              {{ block.settings.carousel_badge_text_1 }}
+            </div>
+          {% endif %}
+          {% if block.settings.carousel_badge_text_2 != blank or block.settings.carousel_badge_svg_2 != blank %}
+          {% assign nb_badges = nb_badges | plus: 1 %}
+            <div class="product-carousel-badge-wrapper">
+              {{ block.settings.carousel_badge_svg_2 }}
+              {{ block.settings.carousel_badge_text_2 }}
+            </div>
+          {% endif %}
+          {% if block.settings.carousel_badge_text_3 != blank or block.settings.carousel_badge_svg_3 != blank %}
+          {% assign nb_badges = nb_badges | plus: 1 %}
+            <div class="product-carousel-badge-wrapper">
+              {{ block.settings.carousel_badge_svg_3 }}
+              {{ block.settings.carousel_badge_text_3 }}
+            </div>
+          {% endif %}
+          {% if block.settings.carousel_badge_text_4 != blank or block.settings.carousel_badge_svg_4 != blank %}
+          {% assign nb_badges = nb_badges | plus: 1 %}
+            <div class="product-carousel-badge-wrapper">
+              {{ block.settings.carousel_badge_svg_4 }}
+              {{ block.settings.carousel_badge_text_4 }}
+            </div>
+          {% endif %}
+        </div>
+        {% style %}
+          {% unless block.settings.carousel_badge_logo_default_color -%}
+            .product-carousel-badge-wrapper svg {
+              color: {{ block.settings.carousel_badge_logo_color }};
+              fill: {{ block.settings.carousel_badge_logo_color }};
+            }
+      
+            .product-carousel-badge-wrapper svg path,
+            .product-carousel-badge-wrapper svg circle {
+              color: {{ block.settings.carousel_badge_logo_color }};
+              fill: {{ block.settings.carousel_badge_logo_color }};
+            }
+          {% endunless %}
+          {% if nb_badges > 3 %}
+            @media (max-width: 410px) {
+              .product-carousel-badge-container {
+                gap: 1.5rem;
+              }
+              .product-carousel-badge-wrapper {
+                max-width: 7rem;
+                max-height: 7rem;
+              }
+            }
+          {% endif %}
+        {% endstyle %}
+      {%- endcase -%}
+    {%- endfor -%}
+</product-carousel-section>
+
+
+<script src="{{ 'library-splide.min.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'section-product.js' | asset_url }}" type="module" defer="defer"></script>
+
+{%- liquid
+  if product.selected_or_first_available_variant.featured_media
+    assign seo_media = product.selected_or_first_available_variant.featured_media
+  else
+    assign seo_media = product.featured_media
+  endif
+-%}
+
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org/",
+    "@type": "Product",
+    "name": {{ product.title | json }},
+    "url": {{ request.origin | append: product.url | json }},
+    {% if seo_media -%}
+      {%- assign media_size = seo_media.preview_image.width | append: 'x' -%}
+      "image": [
+        {{ seo_media | image_url: media_size | prepend: "https:" | json }}
+      ],
+    {%- endif %}
+    "description": {{ product.description | strip_html | json }},
+    {% if product.selected_or_first_available_variant.sku != blank -%}
+      "sku": {{ product.selected_or_first_available_variant.sku | json }},
+    {%- endif %}
+    "brand": {
+      "@type": "Thing",
+      "name": {{ product.vendor | json }}
+    },
+    "offers": [
+      {%- for variant in product.variants -%}
+        {
+          "@type" : "Offer",
+          {%- if variant.sku != blank -%}
+            "sku": {{ variant.sku | json }},
+          {%- endif -%}
+          "availability" : "http://schema.org/{% if variant.available %}InStock{% else %}OutOfStock{% endif %}",
+          "price" : {{ variant.price | divided_by: 100.00 | json }},
+          "priceCurrency" : {{ cart.currency.iso_code | json }},
+          "url" : {{ request.origin | append: variant.url | json }}
+        }{% unless forloop.last %},{% endunless %}
+      {%- endfor -%}
+    ]
+  }
+</script>
+
+{% schema %}
+{
+  "name": "product carousel",
+  "class": "section-product-carousel",
+  "tag": "section",
+  "max_blocks": 1,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Main image"
+    },
+    {
+      "type": "select",
+      "id": "carousel_image_fit",
+      "label": "Images fit",
+      "options": [
+        {
+          "value": "cover",
+          "label": "Cover"
+        },
+        {
+          "value": "contain",
+          "label": "Contained"
+        }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "range",
+      "id": "carousel_main_image_size",
+      "min": 40,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Size",
+      "default": 100,
+      "info": "Only applied if image fit is contained (setting just above)"
+    },
+    {
+      "type": "range",
+      "id": "carousel_main_image_position",
+      "min": -20,
+      "max": 20,
+      "step": 1,
+      "unit": "vh",
+      "label": "Position from top",
+      "default": 0,
+      "info": "Only applied if image fit is contained"
+    },
+    {
+      "type": "color",
+      "id": "carousel_background",
+      "label": "Background",
+      "default": "#fff",
+      "info": "Only applied if image fit is contained"
+    },
+    {
+      "type": "checkbox",
+      "id": "carousel_main_image_gradient",
+      "label": "Add a gradient",
+      "default": false,
+      "info": "Only applied if image fit is contained, useful only if the backgrounds of your photos are different from the background of your site"
+    },
+    {
+      "type": "header",
+      "content": "Dots"
+    },
+    {
+      "type": "paragraph",
+      "content": "Not visible when the \"Vignette\" block is added to this section, for a correct display either the dots or the thumbnails are displayed"
+    },
+    {
+      "type": "range",
+      "id": "carousel_dots_position",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Position from bottom",
+      "default": 20
+    },
+    {
+      "type": "color_background",
+      "id": "carousel_selected_dot_color",
+      "label": "Selected dot color",
+      "default": "#121212"
+    },
+    {
+      "type": "color_background",
+      "id": "carousel_dots_color",
+      "label": "Dots color",
+      "default": "#ccc"
+    }
+  ],
+  "blocks": [
+    {
+      "name": "Thumbnail",
+      "type": "thumbnail",
+      "settings": [
+        {
+          "type": "header",
+          "content": "General style"
+        },
+        {
+          "type": "range",
+          "id": "carousel_thumbnail_size",
+          "min": 10,
+          "max": 30,
+          "step": 5,
+          "unit": "%",
+          "label": "Size",
+          "default": 10
+        },
+        {
+          "type": "range",
+          "id": "carousel_thumbnail_position",
+          "min": 10,
+          "max": 50,
+          "step": 5,
+          "unit": "px",
+          "label": "Position from bottom",
+          "default": 20
+        },
+        {
+          "type": "header",
+          "content": "Selected thumbnail"
+        },
+        {
+          "type": "color_background",
+          "id": "carousel_thumbnail_border_color",
+          "label": "Border color",
+          "default": "#121212",
+          "info": "Apply to selected thumbnail"
+        },
+        {
+          "type": "range",
+          "id": "carousel_thumbnail_border_size",
+          "min": 2,
+          "max": 10,
+          "step": 2,
+          "unit": "px",
+          "label": "Size",
+          "default": 4
+        },
+        {
+          "type": "checkbox",
+          "id": "carousel_thumbnail_no_border",
+          "label": "No border",
+          "default": false
+        }
+      ]
+    },
+    {
+      "name": "Badge",
+      "type": "badge",
+      "settings": [
+        {
+          "type": "header",
+          "content": "General style"
+        },
+        {
+          "type": "range",
+          "id": "carousel_badge_size",
+          "min": 6,
+          "max": 9,
+          "step": 1,
+          "unit": "rem",
+          "label": "Size",
+          "default": 8,
+          "info": "On mobile and if you have 4 badges, the maximum size is set at 7rem to ensure good display"
+        },
+        {
+          "type": "range",
+          "id": "carousel_badge_position",
+          "min": 1,
+          "max": 10,
+          "step": 1,
+          "unit": "rem",
+          "label": "Position from bottom",
+          "default": 2
+        },
+        {
+          "type": "range",
+          "id": "carousel_badge_radius",
+          "min": 0,
+          "max": 40,
+          "step": 2,
+          "unit": "px",
+          "label": "Border radius",
+          "default": 24
+        },
+        {
+          "type": "header",
+          "content": "Style of logos"
+        },
+        {
+          "type": "checkbox",
+          "id": "carousel_badge_logo_default_color",
+          "label": "Leave the default color",
+          "default": true
+        },
+        {
+          "type": "color",
+          "id": "carousel_badge_logo_color",
+          "label": "Color",
+          "default": "#121212",
+          "info": "If the default color is checked this color in not apply"
+        },
+        {
+          "type": "header",
+          "content": "Style of texts"
+        },
+        {
+          "type": "color",
+          "id": "carousel_badge_text_color",
+          "label": "Color",
+          "default": "#121212"
+        },
+        {
+          "type": "header",
+          "content": "Badge 1"
+        },
+        {
+          "type": "html",
+          "id": "carousel_badge_svg_1",
+          "label": "Logo",
+          "default": "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" aria-hidden=\"true\" role=\"img\" class=\"iconify iconify--teenyicons\" width=\"32\" height=\"32\" preserveAspectRatio=\"xMidYMid meet\" viewBox=\"0 0 15 15\"><path fill=\"currentColor\" fill-rule=\"evenodd\" d=\"M7 4.5A4.5 4.5 0 0 1 11.5 0H15v3.5A4.5 4.5 0 0 1 10.5 8H8v7H7v-4H4.5A4.5 4.5 0 0 1 0 6.5V3h3.5c1.414 0 2.675.652 3.5 1.671V4.5Zm1.146 1.646l3-3l.708.708l-3 3l-.708-.708Zm-2 3.708l-3-3l.708-.708l3 3l-.708.708Z\" clip-rule=\"evenodd\"></path></svg>",
+          "info": "Only svg is accepted"
+        },
+        {
+          "type": "text",
+          "id": "carousel_badge_text_1",
+          "label": "Benefit",
+          "default": "Vegan"
+        },
+        {
+          "type": "header",
+          "content": "Badge 2"
+        },
+        {
+          "type": "html",
+          "id": "carousel_badge_svg_2",
+          "label": "Logo",
+          "info": "Only svg is accepted"
+        },
+        {
+          "type": "text",
+          "id": "carousel_badge_text_2",
+          "label": "Benefit",
+          "default": "Benefit 2"
+        },
+        {
+          "type": "header",
+          "content": "Badge 3"
+        },
+        {
+          "type": "html",
+          "id": "carousel_badge_svg_3",
+          "label": "Logo",
+          "info": "Only svg is accepted"
+        },
+        {
+          "type": "text",
+          "id": "carousel_badge_text_3",
+          "label": "Benefit",
+          "default": "Benefit 3"
+        },
+        {
+          "type": "html",
+          "id": "carousel_badge_svg_4",
+          "label": "Logo",
+          "info": "Only svg is accepted"
+        },
+        {
+          "type": "text",
+          "id": "carousel_badge_text_4",
+          "label": "Benefit"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
