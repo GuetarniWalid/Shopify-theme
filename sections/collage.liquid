@@ -27,7 +27,7 @@
         <div class="collage__item collage__item--{{ block.type }} collage__item--{{ section.settings.desktop_layout }}" {{ block.shopify_attributes }}>
           {%- case block.type -%}
             {%- when 'image' -%}
-              <div class="collage-card color-{{ settings.card_color_scheme }}{% if block.settings.image_padding %} collage-card-spacing{% endif %}">
+              <div class="collage-card color-background-2{% if block.settings.image_padding %} collage-card-spacing{% endif %}">
                 <div class="media media--transparent ratio"{% if block.settings.image != blank %} style="--ratio-percent: {{ 1 | divided_by: block.settings.image.aspect_ratio | times: 100 }}%"{% else %} style="--ratio-percent: 100%"{% endif %}>
                   {%- if block.settings.image != blank -%}
                     <img
@@ -40,7 +40,7 @@
                         {%- if block.settings.image.width >= 3000 -%}{{ block.settings.image | image_url: width: 3000 }} 3000w,{%- endif -%}
                         {{ block.settings.image | image_url }} {{ block.settings.image.width }}w"
                       src="{{ block.settings.image | image_url: width: 1500 }}"
-                      sizes="(min-width: {{ settings.page_width }}px) {% if section.blocks.size == 1 %}calc({{ settings.page_width }}px - 100px){% else %}{{ settings.page_width | minus: 100 | times: 0.67 | round }}px{% endif %}, (min-width: 750px){% if section.blocks.size == 1 %} calc(100vw - 100px){% else %} 500px{% endif %}, calc(100vw - 30px)"
+                      sizes="(min-width: 1200px) {% if section.blocks.size == 1 %}calc(1200px - 100px){% else %}{{ 1200 | minus: 100 | times: 0.67 | round }}px{% endif %}, (min-width: 750px){% if section.blocks.size == 1 %} calc(100vw - 100px){% else %} 500px{% endif %}, calc(100vw - 30px)"
                       alt="{{ block.settings.image.alt | escape }}"
                       loading="lazy"
                       width="{{ block.settings.image.width }}"
@@ -66,7 +66,7 @@
                 extend_height: true
               %}
             {%- when 'video' -%}
-              <div class="collage-card color-{{ settings.card_color_scheme }}">
+              <div class="collage-card color-background-2">
                 <noscript>
                   <a href="{{ block.settings.video_url }}" class="collage-card__link{% if block.settings.image_padding %} collage-card-spacing{% endif %}">
                     <div class="media media--transparent ratio"{% if block.settings.cover_image != blank %} style="--ratio-percent: {{ 1 | divided_by: block.settings.cover_image.aspect_ratio | times: 100 }}%"{% else %} style="--ratio-percent: 100%"{% endif %}>
@@ -81,7 +81,7 @@
                             {%- if block.settings.cover_image.width >= 3000 -%}{{ block.settings.cover_image | image_url: width: 3000 }} 3000w,{%- endif -%}
                             {{ block.settings.cover_image | image_url }} {{ block.settings.cover_image.width }}w"
                           src="{{ block.settings.cover_image | image_url: width: 1500 }}"
-                          sizes="(min-width: {{ settings.page_width }}px) {% if section.blocks.size == 1 %}calc({{ settings.page_width }}px - 100px){% else %}{{ settings.page_width | minus: 100 | times: 0.67 | round }}px{% endif %}, (min-width: 750px){% if section.blocks.size == 1 %} calc(100vw - 100px){% else %} 500px{% endif %}, calc(100vw - 30px)"
+                          sizes="(min-width: 1200px) {% if section.blocks.size == 1 %}calc(1200px - 100px){% else %}{{ 1200 | minus: 100 | times: 0.67 | round }}px{% endif %}, (min-width: 750px){% if section.blocks.size == 1 %} calc(100vw - 100px){% else %} 500px{% endif %}, calc(100vw - 30px)"
                           alt="{{ block.settings.description | escape }}"
                           loading="lazy"
                           width="{{ block.settings.cover_image.width }}"
@@ -112,7 +112,7 @@
                               {%- if block.settings.cover_image.width >= 3000 -%}{{ block.settings.cover_image | image_url: width: 3000 }} 3000w,{%- endif -%}
                               {{ block.settings.cover_image | image_url }} {{ block.settings.cover_image.width }}w"
                             src="{{ block.settings.cover_image | image_url: width: 1500 }}"
-                            sizes="(min-width: {{ settings.page_width }}px) {% if section.blocks.size == 1 %}calc({{ settings.page_width }}px - 100px){% else %}{{ settings.page_width | minus: 100 | times: 0.67 | round }}px{% endif %}, (min-width: 750px){% if section.blocks.size == 1 %} calc(100vw - 100px){% else %} 500px{% endif %}, calc(100vw - 30px)"
+                            sizes="(min-width: 1200px) {% if section.blocks.size == 1 %}calc(1200px - 100px){% else %}{{ 1200 | minus: 100 | times: 0.67 | round }}px{% endif %}, (min-width: 750px){% if section.blocks.size == 1 %} calc(100vw - 100px){% else %} 500px{% endif %}, calc(100vw - 30px)"
                             alt="{{ block.settings.description | escape }}"
                             loading="lazy"
                             width="{{ block.settings.cover_image.width }}"

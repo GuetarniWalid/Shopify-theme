@@ -1,0 +1,161 @@
+{{ 'snippet-product-info-variant.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} {
+    --free-size: {{ section.settings.product_info_free_size }}em;
+    --free-border: {{ section.settings.product_info_free_border }}px;
+    --free-border-radius: {{ section.settings.product_info_free_radius }}em;
+    --free-border-color: {{ section.settings.product_info_free_border_color }};
+    --free-selected-background: {{ section.settings.product_info_free_selected_background }};
+    --free-selected-border-color: {{ section.settings.product_info_free_selected_border_color }};
+    --free-bold: {% if section.settings.product_info_free_bold %}bold{% else %}normal{% endif %};
+
+    --rounded-size: {{ section.settings.product_info_rounded_size }}rem;
+    --rounded-border: {{ section.settings.product_info_rounded_border }}px;
+    --rounded-border-color: {{ section.settings.product_info_rounded_border_color }};
+    --rounded-selected-background: {{ section.settings.product_info_rounded_selected_background }};
+    --rounded-selected-border-color: {{ section.settings.product_info_rounded_selected_border_color }};
+    --rounded-bold: {% if section.settings.product_info_rounded_bold %}bold{% else %}normal{% endif %};
+
+    --colored-size: {{ section.settings.product_info_colored_size }}rem;
+  }
+{%- endstyle -%}
+
+<product-info-variant
+    {% liquid
+        assign variants_available = ""
+        assign variants_before_price = ""
+        assign variants_price = ""
+        assign variants_title = ""
+        for variant  in product.variants
+        assign variants_available = variants_available | append: variant.available | append: ','
+        assign variants_before_price = variants_before_price | append: variant.compare_at_price | append: ','
+        assign variants_price = variants_price | append: variant.price | append: ','
+        assign variants_title = variants_title | append: variant.title | append: ','
+        endfor
+        -%} 
+    data-variants-available="{{ variants_available }}"
+    data-variants-before-price="{{ variants_before_price }}"
+    data-variants-price="{{ variants_price }}"
+    data-variants-title="{{ variants_title }}"
+    data-country-iso="{{ localization.language.iso_code }}"
+>
+    <div class="product-info-container">
+        <div class="arrow" hidden>{% render 'icon-arrow' %}</div>  
+        <div class="title">
+            <h1 >{{ product.title }}</h1>
+            <p class="variants">
+                {%- for option in product.first_available_variant.options -%}
+                    {%-liquid
+                    assign current_option_style = 'product_info_option' | append: forloop.index | append: '_style'
+                        assign toColor = false
+                        if section.settings[current_option_style] == 'colored'
+                            assign toColor = true
+                            assign is_valid_color = option | color_to_hex
+                            assign contrast_ratio = option | color_contrast: section.settings.product_info_background
+                        endif
+                    -%}
+                    {%- if is_valid_color != blank and toColor -%}
+                        <span class="color {% if contrast_ratio <= 3 %}uncontrasted{% endif %}" style="background:{{ option }};"></span>
+                    {%- else -%}
+                        <span>{{ option }}</span>
+                    {%- endif -%}
+                    {% unless forloop.last %} /{% endunless %}              
+                {%- endfor -%}
+            </p>
+        </div>
+
+        {% render 'product-info-price' %}
+
+        {%- comment -%}Verif if options are colorable and roundable{%- endcomment -%}
+        {%- liquid
+            assign selected_options = section.settings.product_info_option1_style | append: ',' | append: section.settings.product_info_option2_style | append: ',' | append: section.settings.product_info_option3_style | split: ','
+            assign classes = ''
+
+            for option in product.options_with_values
+                assign colors = ''
+                assign roundings = null | sort
+                assign index = forloop.index | minus: 1
+
+                for value in option.values
+                    assign valid_color = value | strip | downcase | color_to_hex
+                    assign extra_letters = value | slice: 3
+
+                    if valid_color != blank
+                        assign colors = colors | append: 'style="background:{{ valid_color }};outline:1px solid {{ valid_color }};"' | append: ','
+                    endif
+
+                    if extra_letters == blank
+                        assign roundings = roundings | append: 'true,'
+                    endif
+                endfor
+
+                assign colors = colors | split: ','
+                assign roundings = roundings | split: ','
+                assign no_classes = true
+                if colors.size == option.values.size and selected_options[index] == 'colored'
+                    assign classes = classes | append: 'colorable,'
+                    assign no_classes = false
+                endif
+
+                if roundings.size == option.values.size and selected_options[index] == 'rounded'
+                    assign classes = classes | append: 'roundable,'
+                    assign no_classes = false
+                endif
+                
+                if no_classes
+                    assign classes = classes | append: 'free,'
+                endif        
+            endfor
+
+            assign classes = classes | split: ','
+            assign rows = rows | split: ','
+            assign position = 0
+        -%}
+
+        {%- for option in product.options_with_values -%}
+            {%-liquid
+                assign position = position | plus: 1
+                assign index = forloop.index | minus: 1
+                assign is_short = false
+                if product.options_with_values[index].values.size <= 3
+                    assign is_short = true
+                endif
+            -%}
+            {%- if classes[index] == 'colorable' -%}
+                {%- if is_short == true -%}
+                    {%- assign position = position | minus: 1 -%}
+                {%- endif -%}
+                <div class="option {{ classes[index] }} {% if is_short == true %}short{% else %}position{{ position }}{% endif %}">
+                    {%- if section.settings.product_info_show_options_title -%}
+                        <h4>{{ option.name }}</h4>
+                    {%- endif -%}
+                    <div>
+                        {%- for value in option.values -%}
+                            {% assign contrast_ratio = value | color_contrast: section.settings.product_info_background %}
+                            <button class="{% if value == option.selected_value %}selected{% endif %} {% if contrast_ratio <= 1.1 %}uncontrasted{% endif %}" style="background:{{ value }};outline:1px solid {{ value }};"
+                            data-value="{{ value }}"
+                            ></button>
+                        {%- endfor -%}
+                    </div>
+                </div>
+            {%- else -%}
+                <div class="option {{ classes[index] }} position{{ position }}">
+                    {% if section.settings.product_info_show_options_title %}
+                        <h4>{{ option.name }}</h4>
+                    {% endif %%}
+                    <div class="unexpanded">    
+                        {%- for value in option.values -%}
+                            <button class="{% if value == option.selected_value %}selected{% endif %}"
+                            data-value="{{ value }}"
+                            >
+                                {{ value }}
+                            </button>
+                        {%- endfor -%}
+                    </div>
+                </div>
+            {%- endif -%}
+        {% endfor %}
+  
+
+<script src="{{ 'snippet-product-info-variant.js' | asset_url }}" defer="defer"></script>

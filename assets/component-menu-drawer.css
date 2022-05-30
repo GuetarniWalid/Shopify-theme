@@ -37,17 +37,12 @@ menu-drawer > details[open] > summary::before {
   top: 100%;
   width: calc(100vw - 4rem);
   padding: 0;
-  border-width: 0 var(--drawer-border-width) 0 0;
+  border-width: 0 1px 0 0;
   background-color: rgb(var(--color-background));
   overflow-x: hidden;
   border-style: solid;
-  border-color: rgba(var(--color-foreground), var(--drawer-border-opacity));
-  filter: drop-shadow(
-    var(--drawer-shadow-horizontal-offset)
-    var(--drawer-shadow-vertical-offset)
-    var(--drawer-shadow-blur-radius)
-    rgba(var(--color-shadow), var(--drawer-shadow-opacity))
-  );
+  border-color: rgba(var(--color-foreground), 0.1);
+  filter: drop-shadow(0 0 0 rgba(18, 18, 18, 0));
 }
 
 .js .menu-drawer {

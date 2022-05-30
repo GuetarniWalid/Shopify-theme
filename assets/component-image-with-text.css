@@ -91,28 +91,22 @@
 }
 
 .image-with-text:not(.image-with-text--overlap) .image-with-text__media-item:after {
-  border-radius: var(--media-radius);
-  box-shadow: var(--media-shadow-horizontal-offset)
-    var(--media-shadow-vertical-offset)
-    var(--media-shadow-blur-radius)
-    rgba(var(--color-shadow), var(--media-shadow-opacity));
+  border-radius: 0;
+  box-shadow: 0
+    0
+    0
+    rgba(18, 18, 18, var(--media-shadow-opacity));
 }
 
 .image-with-text:not(.image-with-text--overlap) .image-with-text__text-item:after {
-  border-radius: var(--text-boxes-radius);
-  box-shadow: var(--text-boxes-shadow-horizontal-offset)
-    var(--text-boxes-shadow-vertical-offset)
-    var(--text-boxes-shadow-blur-radius)
-    rgba(var(--color-shadow), var(--text-boxes-shadow-opacity));
+  border-radius: 0;
+  box-shadow: 0 0 0 rgba(18, 18, 18, 0);
 }
 
 .image-with-text .image-with-text__media-item > * {
-  border-radius: var(--media-radius);
+  border-radius: 0;
   overflow: hidden;
-  box-shadow: var(--media-shadow-horizontal-offset)
-    var(--media-shadow-vertical-offset)
-    var(--media-shadow-blur-radius)
-    rgba(var(--color-shadow), var(--media-shadow-opacity));
+  box-shadow: 0 0 0 rgba(18, 18, 18, var(--media-shadow-opacity));
 }
 
 .image-with-text .global-media-settings {
@@ -120,12 +114,9 @@
 }
 
 .image-with-text .image-with-text__text-item > * {
-  border-radius: var(--text-boxes-radius);
+  border-radius: 0;
   overflow: hidden;
-  box-shadow: var(--text-boxes-shadow-horizontal-offset)
-    var(--text-boxes-shadow-vertical-offset)
-    var(--text-boxes-shadow-blur-radius)
-    rgba(var(--color-shadow), var(--text-boxes-shadow-opacity));
+  box-shadow: 0 0 0 rgba(18, 18, 18, 0);
 }
 
 .image-with-text:not(.image-with-text--overlap) .image-with-text__media-item > *,
@@ -269,11 +260,8 @@
 }
 
 .image-with-text__content {
-  border-radius: var(--text-boxes-radius);
-  box-shadow: var(--text-boxes-shadow-horizontal-offset)
-    var(--text-boxes-shadow-vertical-offset)
-    var(--text-boxes-shadow-blur-radius)
-    rgba(var(--color-shadow), var(--text-boxes-shadow-opacity));
+  border-radius: 0;
+  box-shadow: 0 0 0 rgba(18, 18, 18, 0);
 }
 
 @media screen and (min-width: 990px) {

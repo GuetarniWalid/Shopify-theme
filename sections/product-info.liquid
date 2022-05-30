@@ -1,16 +1,268 @@
 {{ 'section-product-info.css' | asset_url | stylesheet_tag }}
 
+{%- style -%}
+  #shopify-section-{{ section.id }} {
+    --background: {{ section.settings.product_info_background }};
+    --text-color: {{ section.settings.product_info_text_color }};
+    --background-contrast: {{ section.settings.product_info_text_color | color_modify: 'alpha', 0.3 }};
+  }
+{%- endstyle -%}
+
+<product-info>
+  {% if product.has_only_default_variant %}
+    <div class="product-info-container">
+      <h1 class="title">{{ product.title }}</h1>
+      {% render 'product-info-price' %}
+  {% else %}
+      {% render 'product-info-variant' %}
+  {% endif %}
+
+        <div id="description" class="description">
+          <div class="wrapper page truncate" >
+            {{ product.description }}
+          </div>
+          <a href="#description" class="read more">{{ 'sections.product_info.read_more' | t }}</a>
+          <a href="#main-caroussel" class="read less hidden">{{ 'sections.product_info.read_less' | t }}</a>
+        </div>
+
+      {% unless product.has_only_default_variant %}
+        </product-info-variant>
+      {% endunless %}
+    </div>
+</product-info>  
+
+
+<script src="{{ 'section-product-info.js' | asset_url }}" defer="defer"></script>
+
 
 {% schema %}
 {
-  "name": "product info",
+  "name": "Product info",
   "tag": "section",
   "class": "section-product-info",
-  "blocks": [
-
+  "limit": 1,
+  "templates": [
+    "product"
   ],
   "settings": [
-
+    {
+      "type": "header",
+      "content": "General"
+    },
+    {
+      "type": "color_background",
+      "id": "product_info_background",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "product_info_text_color",
+      "label": "Text color",
+      "default": "#121212"
+    },
+    {
+      "type": "header",
+      "content": "Variant styling"
+    },
+    {
+      "type": "select",
+      "id": "product_info_option1_style",
+      "label": "Variant 1",
+      "options": [
+        {
+          "value": "free",
+          "label": "Free"
+        },
+        {
+          "value": "rounded",
+          "label": "Rounded"
+        },
+        {
+          "value": "colored",
+          "label": "Colored"
+        }
+      ],
+      "default": "free"
+    },
+    {
+      "type": "select",
+      "id": "product_info_option2_style",
+      "label": "Variant 2",
+      "options": [
+        {
+          "value": "free",
+          "label": "Free"
+        },
+        {
+          "value": "rounded",
+          "label": "Rounded"
+        },
+        {
+          "value": "colored",
+          "label": "Colored"
+        }
+      ],
+      "default": "free"
+    },
+    {
+      "type": "select",
+      "id": "product_info_option3_style",
+      "label": "Variant 3",
+      "options": [
+        {
+          "value": "free",
+          "label": "Free"
+        },
+        {
+          "value": "rounded",
+          "label": "Rounded"
+        },
+        {
+          "value": "colored",
+          "label": "Colored"
+        }
+      ],
+      "default": "free"
+    },
+    {
+      "type": "checkbox",
+      "id": "product_info_show_options_title",
+      "label": "Show options title",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Free variants"
+    },
+    {
+      "type": "paragraph",
+      "content": "These settings are only applicable to the free variant options"
+    },
+    {
+      "type": "range",
+      "id": "product_info_free_size",
+      "min": 0.3,
+      "max": 1,
+      "step": 0.1,
+      "unit": "em",
+      "label": "Button size",
+      "default": 0.5
+    },
+    {
+      "type": "color_background",
+      "id": "product_info_free_border_color",
+      "label": "Border color",
+      "default": "pink"
+    },
+    {
+      "type": "color_background",
+      "id": "product_info_free_selected_background",
+      "label": "Background of selected variant",
+      "default": "pink"
+    },
+    {
+      "type": "color_background",
+      "id": "product_info_free_selected_border_color",
+      "label": "Border color of selected variant",
+      "default": "crimson"
+    },
+    {
+      "type": "range",
+      "id": "product_info_free_border",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "unit": "px",
+      "label": "Border size",
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "product_info_free_radius",
+      "min": 0,
+      "max": 2.2,
+      "step": 0.1,
+      "unit": "em",
+      "label": "Corner radius",
+      "default": 2.2
+    },
+    {
+      "type": "checkbox",
+      "id": "product_info_free_bold",
+      "label": "Bold text",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Rounded variants"
+    },
+    {
+      "type": "paragraph",
+      "content": "These settings are only applicable to the rounded variant options"
+    },
+    {
+      "type": "range",
+      "id": "product_info_rounded_size",
+      "min": 4,
+      "max": 8,
+      "step": 0.2,
+      "unit": "rem",
+      "label": "Size",
+      "default": 5.6
+    },
+    {
+      "type": "color_background",
+      "id": "product_info_rounded_border_color",
+      "label": "Border color",
+      "default": "pink"
+    },
+    {
+      "type": "color_background",
+      "id": "product_info_rounded_selected_background",
+      "label": "Background of selected variant",
+      "default": "pink"
+    },
+    {
+      "type": "color_background",
+      "id": "product_info_rounded_selected_border_color",
+      "label": "Border color of selected variant",
+      "default": "crimson"
+    },
+    {
+      "type": "range",
+      "id": "product_info_rounded_border",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "unit": "px",
+      "label": "Border size",
+      "default": 3
+    },
+    {
+      "type": "checkbox",
+      "id": "product_info_rounded_bold",
+      "label": "Bold text",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Colored variants"
+    },
+    {
+      "type": "paragraph",
+      "content": "These settings are only applicable to the colored variant options"
+    },
+    {
+      "type": "range",
+      "id": "product_info_colored_size",
+      "min": 1.5,
+      "max": 4,
+      "step": 0.5,
+      "unit": "rem",
+      "label": "Size",
+      "default": 2
+    }
   ]
 }
 {% endschema %}

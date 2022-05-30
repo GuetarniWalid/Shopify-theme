@@ -9,7 +9,7 @@
 }
 
 .featured-product .product__modal-opener {
-  margin-bottom: var(--media-shadow-vertical-offset);
+  margin-bottom: 0;
 }
 
 .featured-product .product__media-item {

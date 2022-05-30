@@ -1,0 +1,43 @@
+{% comment %}
+    Renders a thumbnail at the bottom of the main carousel
+
+    Accepts:
+    - block: {Object} Block with thumbnail settings
+    - mediaList: {Array[Object]} Product Media object
+
+    Usage:
+    {% render 'product-carousel-thumbnail',
+      block: block,
+      mediaList: mediaListSorted,
+    %}
+{% endcomment %}
+
+{{ 'snippet-product-carousel-thumbnail.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} {
+    --thumbnail-radius: {{ block.settings.carousel_thumbnail_radius }}rem;
+    --arrow-radius: var(--thumbnail-radius);
+    --thumbnail-size: {{ block.settings.carousel_thumbnail_size }}rem;
+    --thumbnail-gap: {{ block.settings.carousel_thumbnail_gap }}rem;
+    --thumbnail-position: {{ block.settings.carousel_thumbnail_position }}rem;
+    --thumbnail-selected-border-size: calc(({{ block.settings.carousel_thumbnail_border_size }} - 1) * 2 / 100 + 1);
+    --thumbnail-selected-color: {% if block.settings.carousel_thumbnail_no_border %}transparent{% else %}{{ block.settings.carousel_thumbnail_border_color }}{% endif %};
+  }
+{%- endstyle -%}
+
+<product-thumbnail-carousel>
+    <div class="product-carousel-thumbnail">
+        <div class="product-thumbnail-container" data-gap="{{ block.settings.carousel_thumbnail_gap }}">
+            {%- for media in mediaList -%}
+                {%- if media.media_type == 'image' -%}
+                <div class="product-thumbnail-image-wrapper {% unless block.settings.carousel_thumbnail_no_border %}border{% endunless %}" data-size="{{ block.settings.carousel_thumbnail_size }}">
+                    {{ media | image_url: width: 2000 | image_tag: class: 'product-media' }}
+                </div>
+                {%- endif -%}
+            {%- endfor -%}
+        </div>
+    </div>
+</product-thumbnail-carousel>
+
+<script src="{{ 'snippet-product-carousel-thumbnail.js' | asset_url }}" type="module" defer="defer"></script>

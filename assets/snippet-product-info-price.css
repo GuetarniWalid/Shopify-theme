@@ -1,0 +1,87 @@
+/******PRICE******/
+.product-info-container .price {
+  --font-size: 2.5rem;
+  grid-column: 1 / span 1;
+  grid-row: 2 / span 1;
+  margin: 1rem 0;
+  font-size: var(--font-size);
+  font-weight: bold;
+  display: flex;
+  align-items: flex-start;
+  column-gap: 0.5rem;
+}
+
+.product-info-container .price p {
+  margin: 0;
+}
+
+.product-info-container .price .sign {
+  font-size: 1.65rem;
+  position: relative;
+  top: -0.6rem;
+}
+
+/**CROSSED**/
+.product-info-container .price .crossed {
+  position: relative;
+  animation: toLighten 0.15s ease-out 0.4s forwards;
+}
+
+.product-info-container .price .crossed .bar {
+  position: absolute;
+  left: 0;
+  top: 40%;
+  width: 100%;
+  height: 2px;
+  background: var(--text-color);
+  transform: scale(0);
+  transform-origin: left;
+  transition: 1s ease-out;
+  animation: toCross 0.2s ease-out 0.2s forwards;
+}
+
+@keyframes toCross {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes toLighten {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.3;
+  }
+}
+
+/**CURRENT**/
+.product-info-container .price .current {
+  opacity: 0;
+  animation: toAppear 0.2s ease-out 0.45s forwards;
+}
+
+@keyframes toAppear {
+  0% {
+    opacity: 0;
+    transform: translateX(-20%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/**PERCENT**/
+.product-info-container .price .percent {
+  font-size: calc(var(--font-size) / 1.8);
+  background: rgb(154, 212, 78);
+  padding: 0.2rem 0.8rem;
+  border-radius: 30px;
+  opacity: 0;
+  animation: toAppear 0.2s ease-out 0.65s forwards;
+}
+

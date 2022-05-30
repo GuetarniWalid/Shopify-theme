@@ -1,0 +1,47 @@
+.product-carousel-badge-container {
+  position: absolute;
+  bottom: calc(var(--badge-bottom) + 3rem);
+  display: inline-flex;
+  gap: 3rem;
+  width: 100%;
+  justify-content: center;
+  transform: translateX(-50%);
+}
+
+.product-carousel-badge-wrapper {
+  width: var(--badge-size);
+  height: calc(var(--badge-size) * 1.1);
+  background: var(--badge-background);
+  border-radius: var(--badge-radius);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 1.4rem;
+  letter-spacing: 0;
+}
+
+.product-carousel-badge-wrapper  span {
+    color: var(--badge-text-color);
+}
+
+.product-carousel-badge-wrapper svg {
+    max-width: 100%;
+}
+
+.product-carousel-badge-wrapper.custom svg {
+  color: var(--badge-svg-color);
+  fill: var(--badge-svg-color);
+}
+
+.product-carousel-badge-wrapper.custom svg path,
+.product-carousel-badge-wrapper.custom svg circle {
+  color: var(--badge-svg-color);
+  fill: var(--badge-svg-color);
+}
+
+

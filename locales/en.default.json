@@ -215,14 +215,6 @@
     }
   },
   "sections": {
-    "header": {
-      "announcement": "Announcement",
-      "menu": "Menu",
-      "cart_count": {
-        "one": "{{ count }} item",
-        "other": "{{ count }} items"
-      }
-    },
     "cart": {
       "title": "Your cart",
       "caption": "Cart items",
@@ -261,8 +253,13 @@
         "empty_text": "Your cart does not contain any items, you cannot access the payment methods"
       }
     },
-    "footer": {
-      "payment": "Payment methods"
+    "collection_list": {
+      "view_all": "View all"
+    },
+    "collection_template": {
+      "empty": "No products found",
+      "title": "Collection",
+      "use_fewer_filters_html": "Use fewer filters or <a class=\"{{ class }}\" href=\"{{ link }}\">clear all</a>"
     },
     "featured_blog": {
       "view_all": "View all",
@@ -273,13 +270,23 @@
       "view_all": "View all",
       "view_all_label": "View all products in the {{ collection_name }} collection"
     },
-    "collection_list": {
-      "view_all": "View all"
+    "footer": {
+      "payment": "Payment methods"
     },
-    "collection_template": {
-      "empty": "No products found",
-      "title": "Collection",
-      "use_fewer_filters_html": "Use fewer filters or <a class=\"{{ class }}\" href=\"{{ link }}\">clear all</a>"
+    "header": {
+      "announcement": "Announcement",
+      "menu": "Menu",
+      "cart_count": {
+        "one": "{{ count }} item",
+        "other": "{{ count }} items"
+      }
+    },
+    "page": {
+      "title": "Page title"
+    },
+    "product_info": {
+      "read_more": "Read more",
+      "read_less": "Close"
     },
     "video": {
       "load_video": "Load video: {{ description }}"
@@ -292,9 +299,6 @@
       "play_slideshow": "Play slideshow",
       "carousel": "Carousel",
       "slide": "Slide"
-    },
-    "page": {
-      "title": "Page title"
     }
   },
   "localization": {
@@ -426,5 +430,8 @@
       "copy_code_success": "Code copied successfully",
       "print_gift_card": "Print"
     }
+  },
+  "in_english": {
+    "color": "color"
   }
 }

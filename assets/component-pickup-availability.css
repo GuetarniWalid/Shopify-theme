@@ -54,15 +54,10 @@ pickup-availability-drawer {
     transform var(--duration-default) ease;
   transform: translateX(100%);
   width: 100%;
-  border-width: 0 0 0 var(--drawer-border-width);
-  border-color: rgba(var(--color-foreground), var(--drawer-border-opacity));
+  border-width: 0 0 0 1px;
+  border-color: rgba(var(--color-foreground), 0.1);
   border-style: solid;
-  filter: drop-shadow(
-    var(--drawer-shadow-horizontal-offset)
-    var(--drawer-shadow-vertical-offset)
-    var(--drawer-shadow-blur-radius)
-    rgba(var(--color-shadow), var(--drawer-shadow-opacity))
-  );
+  filter: drop-shadow(0 0 0 rgba(18, 18, 18,0));
 }
 
 pickup-availability-drawer[open] {

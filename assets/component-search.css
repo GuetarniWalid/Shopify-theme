@@ -3,8 +3,8 @@
 }
 
 .search__button {
-  right: var(--inputs-border-width);
-  top: var(--inputs-border-width);
+  right: 1px;
+  top: 1px;
 }
 
 .search__button:focus-visible {

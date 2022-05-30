@@ -396,7 +396,7 @@
 /* Account/Order */
 :is(.account, .order) {
   margin: 6rem auto 9rem;
-  max-width: var(--page-width);
+  max-width: 120rem;
   padding: 0 2rem;
 }
 
@@ -614,7 +614,7 @@
 
 .order svg {
   width: 1.1rem;
-  color: rgb(var(--color-base-accent-2));
+  color: rgb(51, 79, 180);
   margin-right: 0.5rem;
 }
 

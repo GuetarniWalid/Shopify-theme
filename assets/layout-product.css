@@ -1,0 +1,30 @@
+#product-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto;
+}
+
+#content-for-layout {
+  transform: translateY(-3.05rem);
+}
+
+#shopify-section-footer {
+  transform: translateY(-3.05rem);
+}
+
+/******LAPTOP******/
+@media screen and (min-width: 750px) {
+    #product-container {
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: auto;
+    }
+
+    #content-for-layout {
+        transform: none;
+      }
+      
+      #shopify-section-footer {
+        transform: none;
+      }
+  }

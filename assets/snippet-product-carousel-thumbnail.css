@@ -1,0 +1,81 @@
+.product-carousel-thumbnail {
+  position: absolute;
+  bottom: calc(var(--thumbnail-position) + 3rem);
+  width: 100%;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+
+.product-carousel-thumbnail .product-thumbnail-container {
+  overflow-y: hidden;
+  display: flex;
+  gap: var(--thumbnail-gap);
+  padding: 0 10px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-gutter: stable;
+  scrollbar-width: none;
+  user-select: none;
+}
+
+.product-carousel-thumbnail .product-thumbnail-container::-webkit-scrollbar {
+  display: none;
+  opacity: 0;
+  height: 0;
+}
+
+.product-carousel-thumbnail .product-thumbnail-image-wrapper {
+  height: var(--thumbnail-size);
+  width: var(--thumbnail-size);
+  min-width: var(--thumbnail-size);
+  border-radius: 50%;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  margin: calc(var(--thumbnail-size) * var(--thumbnail-selected-border-size) - var(--thumbnail-size)) 0;
+  cursor: pointer;
+}
+
+.product-carousel-thumbnail .product-thumbnail-image-wrapper::before {
+  content: '';
+  width: var(--thumbnail-size);
+  height: var(--thumbnail-size);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--thumbnail-radius);
+  z-index: 2;
+}
+
+.product-carousel-thumbnail .product-thumbnail-image-wrapper.border::before {
+  background: none;
+  /* width: calc(var(--thumbnail-size) + var(--thumbnail-selected-border-size));
+  height: calc(var(--thumbnail-size) + var(--thumbnail-selected-border-size)); */
+  transform: translate(-50%, -50%) scale(calc(var(--thumbnail-selected-border-size)));
+  z-index: -1;
+}
+
+.product-carousel-thumbnail .product-thumbnail-image-wrapper.border.active::before {
+  background: var(--thumbnail-selected-color);
+}
+
+.product-carousel-thumbnail .product-thumbnail-image-wrapper.active::before {
+  background: transparent;
+}
+
+.product-carousel-thumbnail img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  border-radius: var(--thumbnail-radius);
+  overflow: hidden;
+}
+
+.product-carousel-thumbnail .product-thumbnail-image-wrapper.border.active img {
+  transform: scale(0.93);
+  transition: transform 0.1s;
+}

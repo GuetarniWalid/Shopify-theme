@@ -13,17 +13,17 @@
 }
 
 .disclosure__list-wrapper {
-  border-width: var(--popup-border-width);
+  border-width: 1px;
   border-style: solid;
-  border-color: rgba(var(--color-foreground), var(--popup-border-opacity));
+  border-color: rgba(var(--color-foreground), 0.1);
   overflow: hidden;
   position: absolute;
   bottom: 100%;
   transform: translateY(-1rem);
   z-index: 2;
   background-color: rgb(var(--color-background));
-  border-radius: var(--popup-corner-radius);
-  box-shadow: var(--popup-shadow-horizontal-offset) var(--popup-shadow-vertical-offset) var(--popup-shadow-blur-radius) rgba(var(--color-shadow), var(--popup-shadow-opacity));
+  border-radius: 0;
+  box-shadow: 0 0 0 rgba(18, 18, 18, 0);
 }
 
 .disclosure__list {

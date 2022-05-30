@@ -134,14 +134,20 @@ function cartCollapseClose(e) {
 }
 
 //section-product-carousel
+let photoSelected;
 function productCarouselOpen(e) {
-  console.log('reaffiche');
-  const productCarousel = e.target.querySelector('product-carousel-section');
-  const mainSplide = productCarousel.mainSplide
+  const productCarousel = e.target.querySelector('product-main-carousel');
+  const mainGlider = productCarousel.glider
 
-  mainSplide.on('active', (target) => {
-    Shopify.section = Shopify.section ?? {}
-    Shopify.section.productCarousel = Shopify.section.productCarousel ?? {}
-    Shopify.section.productCarousel.selectedMediaIndex = target.index
-  })  
+  productCarousel.addEventListener('glider-slide-visible', (e) => {
+    photoSelected = e.detail.slide
+    mainGlider.opt.duration = 0.5
+    mainGlider._opt.duration = 0.5
+  })
+
+  if(photoSelected) {
+    mainGlider.opt.duration = 0.001
+    mainGlider._opt.duration = 0.001
+    mainGlider.scrollItem(photoSelected)
+  }
 }

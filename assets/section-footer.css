@@ -297,17 +297,17 @@
 }
 
 .localization-form__select {
-  border-radius: var(--inputs-radius-outset);
+  border-radius: 0;
   position: relative;
   margin-bottom: 1.5rem;
   padding-left: 1rem;
   text-align: left;
-  min-height: calc(4rem + var(--inputs-border-width) * 2);
-  min-width: calc(7rem + var(--inputs-border-width) * 2);
+  min-height: calc(4rem + 1px * 2);
+  min-width: calc(7rem + 1px * 2);
 }
 
 .disclosure__button.localization-form__select {
-  padding: calc(2rem + var(--inputs-border-width));
+  padding: calc(2rem + 1px);
   background: rgb(var(--color-background));
 }
 
@@ -325,7 +325,7 @@ noscript .localization-form__select {
   position: absolute;
   content: '';
   height: 0.6rem;
-  right: calc(var(--inputs-border-width) + 1.5rem);
+  right: calc(1px + 1.5rem);
   top: calc(50% - 0.2rem);
 }
 

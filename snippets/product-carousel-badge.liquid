@@ -1,0 +1,83 @@
+{% comment %}
+    Renders badges at the bottom of the main carousel
+
+    Accepts:
+    - block: {Object} Block with thumbnail settings
+
+    Usage:
+    {% render 'product-carousel-badge',
+      block: block,
+    %}
+{% endcomment %}
+
+{{ 'snippet-product-carousel-badge.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} {
+    --badge-background: {{ block.settings.carousel_badge_background }};
+    --badge-bottom: {{ block.settings.carousel_badge_position }}rem;
+    --badge-size: {{ block.settings.carousel_badge_size }}rem;
+    --badge-radius: {{ block.settings.carousel_badge_radius }}rem; 
+    --badge-svg-color: {{ block.settings.carousel_badge_logo_color }};
+    --badge-text-color: {{ block.settings.carousel_badge_text_color }};
+  }
+{%- endstyle -%}
+
+<div class="product-carousel-badge-container">
+    {%- liquid
+        assign nb_badges = 0
+        assign custom_class = "custom"
+        if block.settings.carousel_badge_logo_default_color
+            assign custom_class = ""
+        endif
+    -%}
+    {% if block.settings.carousel_badge_text_1 != blank or block.settings.carousel_badge_svg_1 != blank %}
+        {% assign nb_badges = nb_badges | plus: 1 %}
+        <div class="product-carousel-badge-wrapper {{ custom_class }}">
+            {{ block.settings.carousel_badge_svg_1 }}
+            <span>
+                {{ block.settings.carousel_badge_text_1 }}
+            </span>
+        </div>
+    {% endif %}
+    {% if block.settings.carousel_badge_text_2 != blank or block.settings.carousel_badge_svg_2 != blank %}
+        {% assign nb_badges = nb_badges | plus: 1 %}
+            <div class="product-carousel-badge-wrapper {{ custom_class }}">
+            {{ block.settings.carousel_badge_svg_2 }}
+            <span>
+                {{ block.settings.carousel_badge_text_2 }}
+            </span>
+            </div>
+    {% endif %}
+    {% if block.settings.carousel_badge_text_3 != blank or block.settings.carousel_badge_svg_3 != blank %}
+        {% assign nb_badges = nb_badges | plus: 1 %}
+        <div class="product-carousel-badge-wrapper {{ custom_class }}">
+        {{ block.settings.carousel_badge_svg_3 }}
+        <span>
+            {{ block.settings.carousel_badge_text_3 }}
+        </span>
+        </div>
+    {% endif %}
+    {% if block.settings.carousel_badge_text_4 != blank or block.settings.carousel_badge_svg_4 != blank %}
+        {% assign nb_badges = nb_badges | plus: 1 %}
+            <div class="product-carousel-badge-wrapper {{ custom_class }}">
+            {{ block.settings.carousel_badge_svg_4 }}
+            <span>
+                {{ block.settings.carousel_badge_text_4 }}
+            </span>
+            </div>
+    {% endif %}
+</div>
+{% style %}
+    {% if nb_badges > 3 %}
+        @media (max-width: 410px) {
+            .product-carousel-badge-container {
+                gap: 1.5rem;
+            }
+            .product-carousel-badge-wrapper {
+                max-width: 7rem;
+                max-height: calc(7rem * 1.3);
+            }
+        }
+    {% endif %}
+{% endstyle %}

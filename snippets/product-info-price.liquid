@@ -1,0 +1,31 @@
+{{ 'snippet-product-info-price.css' | asset_url | stylesheet_tag }}
+
+  {%-liquid
+    assign symbol = localization.country.currency.symbol
+    assign is_promotion = false
+    assign reduction = 0
+    if product.has_only_default_variant
+      assign my_product = product
+    else
+      assign my_product = product.first_available_variant
+    endif
+    if my_product.compare_at_price
+      assign is_promotion = true
+      assign reduction = my_product.price | times: 1.0 | divided_by: my_product.compare_at_price
+      assign reduction = 1 | minus: reduction | times: 100 | round
+    endif
+  -%}
+
+
+<div class="price">
+  <p class="crossed {% if is_promotion == false %}hidden{% endif %}">
+    <span class="sign">{{ symbol }}</span><span class="number">{{ my_product.compare_at_price | money_without_trailing_zeros | slice: 1, 10 }}</span>
+    <span class="bar"></span>
+  </p>
+  <p class="current">
+    <span class="sign">{{ symbol }}</span><span class="number">{{ my_product.price | money_without_trailing_zeros | slice: 1, 10 }}</span>
+  </p>   
+  <span class="percent {% if is_promotion == false %}hidden{% endif %}">
+    {{ reduction }}%
+  </span>      
+</div>
